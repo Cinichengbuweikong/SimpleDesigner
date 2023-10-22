@@ -15,11 +15,11 @@
     <footer>
       <nav>
         <router-link to="/">
-              <i class="iconfont icon-add_px_rounded"></i>
-              新建
+          <i class="iconfont icon-add_px_rounded"></i>
+          新建
         </router-link>
 
-        <router-link to="/">
+        <router-link to="/layout">
           <i class="iconfont icon-view_compact_px_rounded"></i>
           布局
         </router-link>
@@ -66,6 +66,7 @@ html, body {
   .menuBar {
     height: 22px;
     background-color: $barBackgroundColor;
+    border-bottom: 1px solid $foregroundColor;
 
     ul {
       list-style: none;
@@ -91,13 +92,13 @@ html, body {
 
   main {
     flex-grow: 1;
-
     overflow-y: auto;
   }
 
   footer {
     height: 50px;
     background-color: $barBackgroundColor;
+    border-top: 1px solid $foregroundColor;
     
     nav {
       width: 100%;
@@ -111,6 +112,7 @@ html, body {
       a {
         height: 100%;
 
+        font-size: 14px;
         text-decoration: none;
 
         color: $textColor;
@@ -125,6 +127,10 @@ html, body {
 
         &:hover {
           background-color: $barItemHoverBackgroundColor;
+        }
+
+        i {
+          font-size: 20px;
         }
       }
     }
