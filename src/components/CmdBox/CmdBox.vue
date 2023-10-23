@@ -28,7 +28,10 @@ export default {
 
     data() {
         return {
+            // 保存用户输入的指令
             cmd: "",
+
+            // 保存当前用户正在操作的组件
             currentComponent: "",
         };
     },

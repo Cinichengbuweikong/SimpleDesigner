@@ -11,11 +11,13 @@ export default {
 
     props: {
         cmd: {
+            // 指令
             type: String,
             required: true
         },
 
         desc: {
+            // 指令的介绍
             type: String,
             required: true
         }

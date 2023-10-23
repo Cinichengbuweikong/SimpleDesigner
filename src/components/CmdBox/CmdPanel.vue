@@ -28,6 +28,7 @@ export default {
 
   props: {
     cmd: {
+      // 用输入的指令
       type: String,
       required: true,
     },

@@ -1,6 +1,14 @@
 <template>
   <section class="layoutPage">
-    <AsideBar />
+    <ASide>
+        <template v-slot:toolBar>
+            <LayoutASideBar/>
+        </template>
+        
+        <template v-slot:toolPanel>
+            <LayoutASidePanel/>
+        </template>
+    </ASide>
 
     <article>
         <ViewBox />
@@ -11,7 +19,9 @@
 
 <script>
 import CmdBox from '../components/CmdBox/CmdBox.vue';
-import AsideBar from "../components/AsideBar/ASideBar.vue";
+import ASide from "../components/ASide/ASide.vue";
+import LayoutASideBar from "../components/ASide/LayoutASide/LayoutASideBar.vue";
+import LayoutASidePanel from "../components/ASide/LayoutASide/LayoutASidePanel.vue";
 import ViewBox from "../components/ViewBox/ViewBox.vue";
 
 
@@ -26,9 +36,11 @@ export default {
     methods: {},
 
     components: {
-        AsideBar,
+        ASide,
         ViewBox,
-        CmdBox
+        CmdBox,
+        LayoutASideBar,
+        LayoutASidePanel,
     }
 }
 </script>
