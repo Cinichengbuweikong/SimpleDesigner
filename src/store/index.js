@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import AppState from "./AppState/app.js";
+import AppState from "./AppState/AppState.js";
 import AnimationPageState from "./AppState/AnimationPageState.js";
 import ExportPageState from "./AppState/ExportPageState.js";
 import LayoutPageState from "./AppState/LayoutPageState.js";

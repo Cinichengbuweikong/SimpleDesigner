@@ -9,7 +9,25 @@
             </p>
 
             <ul class="boxContent">
-                <li class="boxItem">PageA.vue</li>
+                <li
+                    class="boxItem"
+                    v-for="comp in allPageComponents"
+                    :key="comp.id"
+                    @click="openComponent(comp.id, 'design')"
+                >
+                    <span class="name">
+                        {{comp.name}}.vue
+                    </span>
+                    
+                    <span class="tool">
+                        <i class="iconfont icon-code_px_rounded-copy">
+                            <span>代码</span>
+                        </i>
+                        <i class="iconfont icon-create_px_rounded-copy">
+                            <span>设计</span>
+                        </i>
+                    </span>
+                </li>
             </ul>
         </div>
 
@@ -20,15 +38,49 @@
             </p>
 
             <ul class="boxContent">
-                <li class="boxItem">CompB.vue</li>
+                <li
+                    class="boxItem"
+                    v-for="comp in allNormalComponents"
+                    :key="comp.id"
+                >
+                    <span class="name">
+                        {{comp.name}}.vue
+                    </span>
+                    
+                    <span class="tool">
+                        <i class="iconfont icon-code_px_rounded-copy">
+                            <span>代码</span>
+                        </i>
+                        <i class="iconfont icon-create_px_rounded-copy">
+                            <span>设计</span>
+                        </i>
+                    </span>
+                </li>
             </ul>
         </div>
     </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
     name: "layoutAsideComponentPanelComponent",
+
+    methods: {
+        openComponent(id, type) {
+            // 生成打开某个组件的函数
+            this.$store.commit("LayoutPageState/ADD_OPENED_COMPONENT", { id, type });
+        }
+    },
+
+    computed: {
+        ...mapState("LayoutPageState", {}),
+
+        ...mapState("AppState", {
+            allPageComponents: state => state.components.pageComponents,
+            allNormalComponents: state => state.components.normalComponents,
+        })
+    }
 }
 </script>
 
@@ -85,8 +137,47 @@ export default {
             .boxItem {
                 padding: 3px 2px;
 
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+
                 &:hover {
                     background-color: $barItemHoverBackgroundColor;
+                }
+
+                .name {
+                    overflow: auto;
+                }
+
+                .tool > i {
+                    margin: 0 5px;
+
+                    position: relative;
+
+                    &:hover {
+                        background-color: lighten($color: $barItemHoverBackgroundColor, $amount: 20);
+
+                        span {
+                            display: block;
+                        }
+                    }
+
+                    span {
+                        display: none;
+                        width: 40px;
+
+                        font-size: 14px;
+                        text-align: center;
+
+                        position: absolute;
+                        left: -50%;
+                        top: -150%;
+
+                        background-color: $backgroundColor;
+
+                        border: 1px solid $textColor;
+                        border-radius: 3px;
+                    }
                 }
             }
         }

@@ -8,16 +8,28 @@
     >  <!-- 设计视口 -->
         <Designer
             ref="designerRef"
+            v-if="currentTab !== null"
             :DesignerPointEvents="designer.pointEvents"
-            :DesignerWidth="designer.width"
+            :CurrentComponentData="currentComponentData"
+            :CurrentComponentExtraData="currentComponentExtraData"
         />
+
         <RulerBar
+            v-if="currentTab !== null && currentComponentExtraData.enableRulerBar"
             :ScrollBarWidth="designer.scrollBarWidth"
         />
+
+        <div
+            class="blankInfo"
+            v-if="currentTab === null"
+        >
+            <h1>请先创建或打开一个组件</h1>
+        </div>
     </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import Designer from './Designer.vue';
 import RulerBar from './RulerBar.vue';
 
@@ -33,9 +45,10 @@ export default {
     data() {
         return {
             designer: {
+                // 控制是否让 Designer 组件下的 iframe 响应 pointer-events
                 pointEvents: true,
-                width: 300,
 
+                // 记录当前浏览器的滚动条的长度(px) 默认值是 17
                 scrollBarWidth: 17,
             },
         };
@@ -90,13 +103,27 @@ export default {
 
                 if (e.deltaY < 0 && e.deltaX === 0 && e.deltaZ === 0 && e.ctrlKey) {
                     // 是方法的缩放 这个判断条件时通过观察事件对象中的数据而得到的
-                    this.designer.width += 10;
+                    this.$store.commit(
+                        "LayoutPageState/SET_CURRENT_COMPONENT_EXTRA_DATA",
+                        {
+                            key: "width",
+                            value: this.currentComponentExtraData.width + 10
+                        }
+                    );
+
                     return;
                 }
 
                 if (e.deltaY > 0 && e.deltaX === 0 && e.deltaZ === 0 && e.ctrlKey) {
                     // 是缩小的缩放 这个判断条件时通过观察事件对象中的数据而得到的
-                    this.designer.width -= 10;
+                    this.$store.commit(
+                        "LayoutPageState/SET_CURRENT_COMPONENT_EXTRA_DATA",
+                        {
+                            key: "width",
+                            value: this.currentComponentExtraData.width - 10
+                        }
+                    );
+
                     return;
                 }
             };
@@ -130,19 +157,69 @@ export default {
         },
     },
 
+    computed: {
+        ...mapState("LayoutPageState", {
+            currentTab: state => {
+                // 获取存储在 LayoutPageState 中的当前激活的组件的信息
+                return state.tabBar.currentTab;
+            },
+
+            allOpenedComponents: state => {
+                // 获取存储在 LayoutPageState 中的所有打开的组件的额外信息
+                // 额外信息指的就是类似于 "Designer 内 iframe 的大小" 这样的信息
+                return state.openedComponents;
+            }
+        }),
+
+        ...mapState("AppState", {
+            // 获取存储在 AppState 中的组件数据
+            allPageComponents: state => state.components.pageComponents,
+            allNormalComponents: state => state.components.normalComponents,
+        }),
+
+        currentComponentData() {
+            // 获取当前被激活的组件的数据
+
+            if (this.currentTab === null) {
+                return null;
+            }
+
+            if (this.allPageComponents[this.currentTab.id]) {
+                return this.allPageComponents[this.currentTab.id];
+            }
+            else if (this.allNormalComponents[this.currentTab.id]) {
+                return this.allNormalComponents[this.currentTab.id];
+            }
+
+            return null;
+        },
+
+        currentComponentExtraData() {
+            // 获取当前被激活的组件的额外数据
+
+            if (this.currentTab === null) {
+                return null;
+            }
+
+            return this.allOpenedComponents.find(comp => comp.id === this.currentTab.id);
+        }
+    },
+
     components: {
         Designer,
         RulerBar,
     },
 
     mounted() {
-        // 计算 Designer 组件内的滚动条的宽度 已让 RulerBar 组件避开滚动条
-        const designerElem = this.$refs.designerRef.$el;
+        if (this.currentTab !== null) {
+            // 计算 Designer 组件内的滚动条的宽度 已让 RulerBar 组件避开滚动条
+            const designerElem = this.$refs.designerRef.$el;
 
-        const elementOuterWidth = designerElem.clientWidth;
-        const elementInnerWidth = designerElem.offsetWidth;
+            const elementOuterWidth = designerElem.clientWidth;
+            const elementInnerWidth = designerElem.offsetWidth;
 
-        this.scrollBarWidth = elementOuterWidth - elementInnerWidth;
+            this.scrollBarWidth = elementOuterWidth - elementInnerWidth;
+        }
     },
 }
 </script>
@@ -157,5 +234,17 @@ export default {
     position: relative;
 
     outline: 0;
+
+    .blankInfo {
+        width: 100%;
+        height: 100%;
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: $textColor;
+        font-size: 24px;
+    }
 }
 </style>

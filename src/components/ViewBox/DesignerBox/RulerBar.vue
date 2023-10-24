@@ -197,6 +197,8 @@ export default {
         return {
             unitWidth: 10,
             unitHeight: 10,
+
+            scrollBarWidth: 17,
         };
     },
 

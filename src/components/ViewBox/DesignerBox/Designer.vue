@@ -18,21 +18,39 @@ export default {
             required: true
         },
 
-        DesignerWidth: {
-            // 动态获取 div.designer 的宽度  以实现调整 div.designer 的效果
-            type: Number,
-            required: true
+        CurrentComponentData: {
+            // 获取当前被激活的组件的数据
+            // 本组件需要显示这个对象中包含的组件数据
+            type: Object,
+            required: true,
+        },
+
+        CurrentComponentExtraData: {
+            // 获取当前被激活的组件的额外数据
+            // 本组件需要根据这个对象中包含的额外数据来调整本组件内的界面的信息
+            type: Object,
+            required: true,
         },
     },
 
     computed: {
         cssVars() {
             return {
-                "--iframePointerEvents": this.DesignerPointEvents === false ? "none" : "auto",
-                "--designerWidth": this.DesignerWidth >= 0 ? `${this.DesignerWidth}px` : "0px",
+                "--iframePointerEvents":
+                    this.DesignerPointEvents === false ? "none" : "auto",
+                
+                "--designerWidth":
+                    this.CurrentComponentExtraData.width >= 0
+                    ? `${this.CurrentComponentExtraData.width}px`
+                    : "0px",
+                
+                "--aspectRatio": 
+                    this.CurrentComponentExtraData.aspectRatio
+                    ? this.CurrentComponentExtraData.aspectRatio
+                    : "16/9"
             };
         }
-    }
+    },
 }
 </script>
 
@@ -50,7 +68,7 @@ export default {
 
     .designer {
         width: var(--designerWidth);
-        aspect-ratio: 16/9;
+        aspect-ratio: var(--aspectRatio);
 
         border: 1px dashed #ddd;
 
