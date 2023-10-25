@@ -75,12 +75,16 @@ export default {
 
 <style lang="scss" scoped>
 .tabItem {
-    min-width: 60px;
     height: 100%;
 
     display: inline-flex;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
+    flex-wrap: nowrap;  // 设置在父容器在容纳不下时不要换行 而是直接溢出
+    flex-shrink: 0;  // 设置在父容器在容纳不下时不要调整大小
 
+    border-top: 3px solid transparent;
     border-right: 1px solid $foregroundColor;
 
     font-size: 14px;
@@ -89,7 +93,6 @@ export default {
     cursor: pointer;
 
     &.active {
-        height: calc(100% - 3px);
         border-top: 3px solid $actionColor;
     }
 

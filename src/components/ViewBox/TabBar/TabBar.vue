@@ -56,8 +56,19 @@ export default {
 
 <style lang="scss" scoped>
 .tabBar {
-    width: 100%;
+    width: calc(100vw - 250px);
     height: 32px;
+
+    overflow-x: scroll;
+    scrollbar-width: none;  /* 设置 firefox 下不显示滚动条 */
+    &::-webkit-scrollbar {  /* 设置 chrome 下不显示滚动条 */
+      width: 0px;
+      height: 0px;
+    }
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
 
     background-color: $barBackgroundColor;
 }

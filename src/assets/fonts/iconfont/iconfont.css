@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4296966 */
-  src: url('iconfont.woff2?t=1698150109014') format('woff2'),
-       url('iconfont.woff?t=1698150109014') format('woff'),
-       url('iconfont.ttf?t=1698150109014') format('truetype');
+  src: url('iconfont.woff2?t=1698199674992') format('woff2'),
+       url('iconfont.woff?t=1698199674992') format('woff'),
+       url('iconfont.ttf?t=1698199674992') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-delete_px_rounded:before {
+  content: "\ed3c";
 }
 
 .icon-code_px_rounded-copy:before {

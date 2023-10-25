@@ -40,13 +40,29 @@
         </router-link>
       </nav>
     </footer>
+
+    <Dialog
+      v-if="showDialog"
+    />
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
+import Dialog from './components/Dialog/Dialog.vue';
+
 export default {
   name: 'App',
+
+  computed: {
+    ...mapState("AppState", {
+      showDialog: state => state.dialog.dialogData.show,
+    })
+  },
+
   components: {
+    Dialog
   }
 }
 </script>

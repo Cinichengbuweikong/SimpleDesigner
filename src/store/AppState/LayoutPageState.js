@@ -1,7 +1,6 @@
 // 存储布局页的页面状态
 
-import newComponentData from "../../utils/componentData.js";
-import newComponentExtraData from "../../utils/componentExtraData.js";
+import newComponentExtraData from "../../utils/newComponentExtraData.js";
 
 
 export default {
@@ -112,7 +111,7 @@ export default {
             }
 
             this.commit("LayoutPageState/SET_CURRENT_TAB", { id, type });
-        }
+        },
     },
 
     state: {

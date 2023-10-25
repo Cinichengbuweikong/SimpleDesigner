@@ -8,7 +8,11 @@
             <ul class="boxContent">
                 <li class="boxItem">
                     标尺
-                    <input type="checkbox">
+                    <input
+                        type="checkbox"
+                        :disabled="allOpenedComponents.length === 0"
+                        v-model="rulerBarState"
+                    >
                 </li>
             </ul>
         </div>
@@ -16,8 +20,42 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
     name: "layoutAsideToolPanelComponent",
+
+    methods: {
+    },
+
+    computed: {
+        ...mapState('LayoutPageState', {
+            allOpenedComponents: state => state.openedComponents,
+            currentTab: state => state.tabBar.currentTab
+        }),
+
+        rulerBarState: {
+            get() {
+                if (this.currentTab === null) {
+                    return null;
+                }
+
+                const currentComponentID = this.currentTab.id;
+                const currentComponent =  this.allOpenedComponents.find(comp => comp.id === currentComponentID);
+                return currentComponent.enableRulerBar;
+            },
+
+            set(value) {
+                this.$store.commit(
+                    "LayoutPageState/SET_CURRENT_COMPONENT_EXTRA_DATA", 
+                    {
+                        key: "enableRulerBar",
+                        value
+                    }
+                );
+            }
+        },
+    },
 }
 </script>
 
