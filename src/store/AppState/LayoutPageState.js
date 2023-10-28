@@ -27,16 +27,22 @@ export default {
             // id: String  是要从标签栏中移除组件的 id
             // type: "design" | code"  是要从标签栏中移除组件的类型
 
-            // 删除掉一个标签页之前 需要先把标签页中的内容保存到文件中
+            // 删除掉一个标签页之前 记得需要先询问用户把标签页中的内容保存到文件中
 
+            // debugger;
 
             // 获取要要被删除的标签在 openedComponents 中的下标
             const mustDeleteTabIndex =
                 state.openedComponents.findIndex(comp => comp.id === id && comp.type === type);
 
+            // 如果给定的 id 不在打开的标签中 那我们直接返回即可
+            if (mustDeleteTabIndex === -1) {
+                return ;
+            }
+
             // 而后获取到当前被激活的标签在 openedComponents 中的下标
             const currentActiveTabIndex = 
-                state.openedComponents.findIndex(comp => comp.id === state.tabBar.currentTab.id);
+                state.openedComponents.findIndex(comp => comp.id === state.tabBar.currentTab.id && comp.type === state.tabBar.currentTab.type);
             
             if (mustDeleteTabIndex === currentActiveTabIndex) {
                 // 如果当前用户想要删除的标签页就是当前激活的标签页的话
@@ -103,7 +109,9 @@ export default {
         ADD_OPENED_COMPONENT(state, {id, type}) {
             // 向打开的组件的数组中添加一个对象 也就是打开一个组件
 
-            if (state.openedComponents.findIndex(comp => comp.id === id) === -1) {
+            if (
+                state.openedComponents.findIndex(comp => comp.id === id && comp.type === type) === -1
+            ) {
                 // 说明当前 tab 栏中没有打开此组件 因此打开此组件
                 const newOpenedComponent = newComponentExtraData(id, type);
                 const newOpenedComponents = [ ...state.openedComponents, newOpenedComponent ];
@@ -121,33 +129,8 @@ export default {
             // 当前组件页面的类型是代码页面还是设计页面之类的信息
             
             // 还通过存储在这里的信息来生成标签栏中的标签
-            {
-                id: "123456",  // 组件 id
-                type: "design",  // 当前标签页的类型 取值 "design" | "code"
 
-                width: 300,  // 展示组件的 iframe 的宽度
-                aspectRatio: "16/9",  // 展示组件的 iframe 的宽高比
-
-                enableRulerBar: true,  // 是否启用标尺
-            },
-            {
-                id: "654321",
-                type: "design",
-
-                width: 300,
-                aspectRatio: "3/2",
-
-                enableRulerBar: true
-            },
-            {
-                id: "1234567",
-                type: "design",
-
-                width: 300,
-                aspectRatio: "16/10",
-
-                enableRulerBar: true
-            },
+            // 这里所需存储的对象的结构 见  ./src/utils/newComponentExtraData.js
         ],
 
         tabBar: {
@@ -156,16 +139,31 @@ export default {
             // 存储当前活动的组件的 id 和本标签页的类型(代码还是设计)
             // 通过此状态得知当前用户在操作哪个
             // 本属性的类型为 { id: String, type: "design" | "code" } | null 
-            currentTab: { id: "123456", type: "design" },
+            
+            currentTab: null,
         },
 
         panel: {
             // 存储当前打开的侧边栏面板信息
 
             // 当前打开的侧边栏面板名  我们通过这个状态来指示侧边栏现在应打开哪个面板
+            // 这里设置默认打开组件面板
+
             currentPanel: "LayoutASideComponentPanel"
         }
     },
  
-    getters: {}
+    getters: {
+        getCurrentActiveComponentExtraData(state) {
+            // 获取当前激活的 tab 所对应的组件的额外信息对象
+
+            if (state.tabBar.currentTab === null) {
+                return null;
+            }
+
+            const currentComponentID = state.tabBar.currentTab.id;
+
+            return state.openedComponents.find(comp => comp.id === currentComponentID);
+        },
+    }
 };

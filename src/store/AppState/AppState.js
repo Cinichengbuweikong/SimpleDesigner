@@ -47,6 +47,44 @@ export default {
             });
         },
 
+        DELETE_BY_DIALOG_COMPONENET(state) {
+            // 删除一个组件 本函数不接受其他参数
+            // 要被删除的组件的信息会从 state.dialog.DeleteComponentDialogData 中获取
+            // 因此本 mutation 用于删除由 "删除组件对话框" 设置要删除的组件
+
+            const mustDeleteComponentID = state.dialog.DeleteComponentDialogData.deleteComponentID;
+
+            if (state.components.pageComponents[mustDeleteComponentID]) {
+                let newPageComponents = { ...state.components.pageComponents };
+                delete newPageComponents[mustDeleteComponentID];
+                state.components.pageComponents = newPageComponents;
+            }
+            else if (state.components.normalComponents[mustDeleteComponentID]) {
+                let newNormalComponents = { ...state.components.normalComponents };
+                delete newNormalComponents[mustDeleteComponentID];
+                state.components.normalComponents = newNormalComponents;
+            }
+        },
+
+        MODIFY_COMPONENT_DATA(state, { componentID, newComponentData }) {
+            // 修改组件对象中所 存储的数据
+
+            if (state.components.pageComponents[componentID]) {
+                for (let key in newComponentData) {
+                    state.components.pageComponents[componentID][key] = newComponentData[key];
+                }
+            }
+            else if (state.components.normalComponents[componentID]) {
+                for (let key in newComponentData) {
+                    state.components.normalComponents[componentID][key] = newComponentData[key];
+                }
+            } else {
+                // 很奇怪 给定的组件 id 不在 pageComponents 和 normalComponents 中
+                // 那就 console.log() 一下 id 就行了
+                console.log("unknow component id: ", componentID);
+            }
+        },
+
 
         // 对话框
         SET_DIALOG_STATE(state, dialogStateObject) {
@@ -94,6 +132,22 @@ export default {
             }
 
             state.dialog.NewComponentDialogData.newComponentType = newComponentType;
+        },
+
+        SET_DELETE_COMPONENT_ID(state, deleteComponentID) {
+            // 用于设置要被删除的组件的 id
+            // deleteComponentID: String  表示要被删除的组件的 id
+
+            // 首先检查输入输入的 id 是否是一个合法的 id
+            if (
+                state.components.pageComponents[deleteComponentID] === undefined
+                && state.components.normalComponents[deleteComponentID] === undefined
+            ) {
+                // 不存在此 id 对应的数据  取消执行
+                return ;
+            }
+
+            state.dialog.DeleteComponentDialogData.deleteComponentID = deleteComponentID;
         }
     },
 
@@ -103,31 +157,12 @@ export default {
             pageComponents: {
                 // 保存页面组件数据
                 // 本对象中 key 组件的唯一 id, val 是一个对象 保存当前组件的数据
-
-                "123456": {
-                    id: "123456",
-                    name: "TestPageComp",
-                    type: "page"
-                },
-
-                "654321": {
-                    id: "654321",
-                    name: "anotherComp",
-                },
-
-                "1234567": {
-                    id: "1234567",
-                    name: "testAgain!"
-                }
+                // 这个所需存储的对象的结构见 ./src/utils/newComponentData.js
             },
             normalComponents: {
                 // 保存普通组件数据
                 // 本对象中 key 是组件的唯一 id, val 是一个对象 保存当前组件的数据
-
-                "123456734667": {
-                    id: "1234567",
-                    name: "testAgain!"
-                }
+                // 这个所需存储的对象的结构见 ./src/utils/newComponentData.js
             }
         },
 
@@ -165,6 +200,13 @@ export default {
 
                 // 要新建的组件的类型  取值: "page" | "normal"
                 newComponentType: "page",
+            },
+
+            DeleteComponentDialogData: {
+                // 存储 "删除组件" 对话框的数据
+
+                // 要新建的组件的id
+                deleteComponentID: "",
             }
         }
     },

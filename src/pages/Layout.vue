@@ -12,13 +12,11 @@
 
     <article>
         <ViewBox />
-        <CmdBox />
     </article>
   </section>
 </template>
 
 <script>
-import CmdBox from '../components/CmdBox/CmdBox.vue';
 import ASide from "../components/ASide/ASide.vue";
 import LayoutASideBar from "../components/ASide/LayoutASide/LayoutASideBar.vue";
 import LayoutASidePanel from "../components/ASide/LayoutASide/LayoutASidePanel.vue";
@@ -38,7 +36,6 @@ export default {
     components: {
         ASide,
         ViewBox,
-        CmdBox,
         LayoutASideBar,
         LayoutASidePanel,
     }
@@ -60,14 +57,6 @@ export default {
         flex-direction: column;
 
         position: relative;
-
-        :deep(.cmdBox) {
-            position: absolute;
-            left: 50%;
-            bottom: 60px;
-
-            transform: translateX(-50%);
-        }
     }
 }
 

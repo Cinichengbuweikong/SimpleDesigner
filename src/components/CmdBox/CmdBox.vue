@@ -11,7 +11,7 @@
             </div>
         </div>
 
-        <div class="cmdInput" @click="$refs.cmdInput.focus()" :style="cssVars">  <!-- 命令输入栏 -->
+        <div class="cmdInput" @click="cmdInputClick" :style="cssVars">  <!-- 命令输入栏 -->
             <input type="text" v-model="cmd" ref="cmdInput">
             <div class="equalCmdBox">  <!-- 显示等价命令的盒子 -->
                 =
@@ -34,6 +34,13 @@ export default {
             // 保存当前用户正在操作的组件
             currentComponent: "",
         };
+    },
+
+    methods: {
+        cmdInputClick(event) {
+            event.stopPropagation();
+            this.$refs.cmdInput.focus();
+        },
     },
 
     computed: {

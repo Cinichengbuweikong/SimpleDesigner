@@ -8,30 +8,26 @@
     >  <!-- 设计视口 -->
         <Designer
             ref="designerRef"
-            v-if="currentTab !== null"
             :DesignerPointEvents="designer.pointEvents"
             :CurrentComponentData="currentComponentData"
             :CurrentComponentExtraData="currentComponentExtraData"
         />
 
         <RulerBar
-            v-if="currentTab !== null && currentComponentExtraData.enableRulerBar"
+            v-if="currentComponentExtraData.enableRulerBar"
             :ScrollBarWidth="designer.scrollBarWidth"
         />
 
-        <div
-            class="blankInfo"
-            v-if="currentTab === null"
-        >
-            <h1>请先创建或打开一个组件</h1>
-        </div>
+        <CmdBox />
     </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+
 import Designer from './Designer.vue';
 import RulerBar from './RulerBar.vue';
+import CmdBox from '../../CmdBox/CmdBox.vue';
 
 
 // 这个变量用于缓存 designerBox 上的 alt key 是否被按下
@@ -163,7 +159,7 @@ export default {
                 // 获取存储在 LayoutPageState 中的当前激活的组件的信息
                 return state.tabBar.currentTab;
             },
-
+            
             allOpenedComponents: state => {
                 // 获取存储在 LayoutPageState 中的所有打开的组件的额外信息
                 // 额外信息指的就是类似于 "Designer 内 iframe 的大小" 这样的信息
@@ -180,10 +176,6 @@ export default {
         currentComponentData() {
             // 获取当前被激活的组件的数据
 
-            if (this.currentTab === null) {
-                return null;
-            }
-
             if (this.allPageComponents[this.currentTab.id]) {
                 return this.allPageComponents[this.currentTab.id];
             }
@@ -197,10 +189,6 @@ export default {
         currentComponentExtraData() {
             // 获取当前被激活的组件的额外数据
 
-            if (this.currentTab === null) {
-                return null;
-            }
-
             return this.allOpenedComponents.find(comp => comp.id === this.currentTab.id);
         }
     },
@@ -208,18 +196,17 @@ export default {
     components: {
         Designer,
         RulerBar,
+        CmdBox,
     },
 
     mounted() {
-        if (this.currentTab !== null) {
-            // 计算 Designer 组件内的滚动条的宽度 已让 RulerBar 组件避开滚动条
-            const designerElem = this.$refs.designerRef.$el;
+        // 计算 Designer 组件内的滚动条的宽度 已让 RulerBar 组件避开滚动条
+        const designerElem = this.$refs.designerRef.$el;
 
-            const elementOuterWidth = designerElem.clientWidth;
-            const elementInnerWidth = designerElem.offsetWidth;
+        const elementOuterWidth = designerElem.clientWidth;
+        const elementInnerWidth = designerElem.offsetWidth;
 
-            this.scrollBarWidth = elementOuterWidth - elementInnerWidth;
-        }
+        this.scrollBarWidth = elementOuterWidth - elementInnerWidth;
     },
 }
 </script>
@@ -235,16 +222,12 @@ export default {
 
     outline: 0;
 
-    .blankInfo {
-        width: 100%;
-        height: 100%;
-        
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    :deep(.cmdBox) {
+        position: absolute;
+        left: 50%;
+        bottom: 60px;
 
-        color: $textColor;
-        font-size: 24px;
+        transform: translateX(-50%);
     }
 }
 </style>

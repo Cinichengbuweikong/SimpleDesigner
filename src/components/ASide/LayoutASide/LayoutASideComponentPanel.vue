@@ -5,7 +5,7 @@
         <div class="panelBox">
             <p class="boxTitle">
                 页面组件:
-                <span @click="addPageComponent" ref="addPageComponentButton">+</span>
+                <span @click="addComponent('page')" ref="addPageComponentButton">+</span>
             </p>
 
             <ul class="boxContent">
@@ -20,10 +20,17 @@
                     </span>
                     
                     <span class="tool">
-                        <i class="iconfont icon-delete_px_rounded">
+                        <i
+                            class="iconfont icon-delete_px_rounded"
+                            :ref="`deleteCompRef_${comp.id}`"
+                            @click.stop="deleteComponent(comp.id)"
+                        >
                             <span>删除</span>
                         </i>
-                        <i class="iconfont icon-code_px_rounded-copy">
+                        <i
+                            class="iconfont icon-code_px_rounded-copy"
+                            @click.stop="openComponent(comp.id, 'code')"
+                        >
                             <span>代码</span>
                         </i>
                         <i class="iconfont icon-create_px_rounded-copy">
@@ -37,13 +44,14 @@
         <div class="panelBox">
             <p class="boxTitle">
                 普通组件:
-                <span @click="addNormalComponent" ref="addNormalComponentButton">+</span>
+                <span @click="addComponent('normal')" ref="addNormalComponentButton">+</span>
             </p>
 
             <ul class="boxContent">
                 <li
                     class="boxItem"
                     v-for="comp in allNormalComponents"
+                    @click="openComponent(comp.id, 'design')"
                     :key="comp.id"
                 >
                     <span class="name">
@@ -51,11 +59,18 @@
                     </span>
                     
                     <span class="tool">
-                        <i class="iconfont icon-delete_px_rounded">
+                        <i
+                            class="iconfont icon-delete_px_rounded"
+                            :ref="`deleteCompRef_${comp.id}`"
+                            @click.stop="deleteComponent(comp.id)"
+                        >
                             <span>删除</span>
                         </i>
 
-                        <i class="iconfont icon-code_px_rounded-copy">
+                        <i
+                            class="iconfont icon-code_px_rounded-copy"
+                            @click.stop="openComponent(comp.id, 'code')"
+                        >
                             <span>代码</span>
                         </i>
                         <i class="iconfont icon-create_px_rounded-copy">
@@ -78,15 +93,16 @@ export default {
 
     methods: {
         openComponent(id, type) {
-            // 生成打开某个组件的函数
+            // 打开某个组件的函数
             this.$store.commit("LayoutPageState/ADD_OPENED_COMPONENT", { id, type });
         },
 
-        addPageComponent() {
+        addComponent(componentType) {
             // 添加一个页面组件
+            // componentType: "page" | "normal"  要新建的组件的类型
 
             // 设置要新建的组件的类型
-            this.$store.commit("AppState/SET_NEW_COMPONENT_TYPE", "page");
+            this.$store.commit("AppState/SET_NEW_COMPONENT_TYPE", componentType);
 
             // 获取当前按钮相对于整个屏幕的位置(百分比)
             const { centerXRatio, centerYRatio } = getElementPosition(this.$refs.addPageComponentButton);
@@ -100,19 +116,28 @@ export default {
             });
         },
 
-        addNormalComponent() {
-            // 添加一个普通组件
+        deleteComponent(id) {
+            // 删除一个组件
+            // id: String  要被删除的组件的 id
 
-            // 设置要新建的组件的类型
-            this.$store.commit("AppState/SET_NEW_COMPONENT_TYPE", "normal");
+            // 本函数可用于删除页面组件或是删除普通组件
+            // 因为函数内部通过 id 来辨别要删除哪个组件 而不管是页面组件还是普通组件 它们的 id 都是唯一的
+            // 一个 id 唯一确定一个组件 因此本方法可用于删除普通组件或是页面组件
 
-            // 获取当前按钮相对于整个屏幕的位置(百分比)
-            const { centerXRatio, centerYRatio } = getElementPosition(this.$refs.addNormalComponentButton);
-            
-            // 而后显示新建组件对话框
+            // 首先设置要被删除的组件的 id
+            this.$store.commit("AppState/SET_DELETE_COMPONENT_ID", id);
+
+            // 获取当前删除按钮的位置
+            // 这里的 this.$refs[`deleteCompRef_${id}`] 获取到的是一个包含元素 ref 的数组
+            // 数组中只有一个元素 就是被引用的元素 我们需要获取到它
+            const deleteElem = this.$refs[`deleteCompRef_${id}`][0];
+
+            const { centerXRatio, centerYRatio } = getElementPosition(deleteElem);
+
+            // 而后显示删除对话框
             this.$store.commit("AppState/SET_DIALOG_STATE", {
                 show: true,
-                dialogCompName: "NewComponentDialog",
+                dialogCompName: "DeleteComponentDialog",
                 left: centerXRatio,
                 top: centerYRatio
             });

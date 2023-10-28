@@ -13,6 +13,8 @@
 
 <script>
 import { mapState } from "vuex";
+
+import DeleteComponentDialog from './DialogContent/DeleteComponentDialog.vue';
 import NewComponentDialog from './DialogContent/NewComponentDialog.vue';
 
 
@@ -55,8 +57,9 @@ export default {
     },
 
     components: {
-        NewComponentDialog
-    }
+        NewComponentDialog,
+        DeleteComponentDialog
+    },
 }
 </script>
 

@@ -10,7 +10,7 @@
                     标尺
                     <input
                         type="checkbox"
-                        :disabled="allOpenedComponents.length === 0"
+                        :disabled="allOpenedComponents.length === 0 || currentTab.type === 'code'"
                         v-model="rulerBarState"
                     >
                 </li>
@@ -30,16 +30,26 @@ export default {
 
     computed: {
         ...mapState('LayoutPageState', {
+            // 获取到所有打开的标签
             allOpenedComponents: state => state.openedComponents,
+            // 当前活动的标签
             currentTab: state => state.tabBar.currentTab
         }),
 
         rulerBarState: {
             get() {
+                // 如果现在没有活动的标签页的话 那就返回一个 null 就行
                 if (this.currentTab === null) {
                     return null;
                 }
 
+                // 如果现在活动的标签页是 code 页的话 那就返回一个 false
+                // 因为 code 页不需要标尺
+                if (this.currentTab.type === "code") {
+                    return false;
+                }
+
+                // 对于其他情况 我们只需返回当前组件中的额外信息内记录的 是否启用标尺 的信息即可
                 const currentComponentID = this.currentTab.id;
                 const currentComponent =  this.allOpenedComponents.find(comp => comp.id === currentComponentID);
                 return currentComponent.enableRulerBar;

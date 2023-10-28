@@ -1,8 +1,9 @@
 <template>
   <div class="tabBar">  <!-- 标签栏 -->
+    <!-- 定义 ${comp.id}_${comp.type} 为标签项的 id -->
     <TabBarItem
       v-for="comp in openedComponents"
-      :key="comp.id"
+      :key="`${comp.id}_${comp.type}`"
 
       :itemid="comp.id"
       :itemName="getComponentName(comp.id)"
@@ -21,6 +22,9 @@ export default {
 
   methods: {
     getComponentName(compid) {
+      // 通过给定的 id  获取该 id 对应的组件的 名字
+      // compid: String  组件的 id
+
       if (this.allPageComponents[compid]) {
         return this.allPageComponents[compid].name;
       }
@@ -48,9 +52,6 @@ export default {
       allNormalComponents: state => state.components.normalComponents
     }),
   },
-
-  mounted() {
-  }
 }
 </script>
 
@@ -60,6 +61,7 @@ export default {
     height: 32px;
 
     overflow-x: scroll;
+    overflow-y: hidden; 
     scrollbar-width: none;  /* 设置 firefox 下不显示滚动条 */
     &::-webkit-scrollbar {  /* 设置 chrome 下不显示滚动条 */
       width: 0px;
