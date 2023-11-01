@@ -61,44 +61,33 @@ export default {
         checkDuplicateName() {
             // 检查用户输入的组件名是否和其他组件重名了
 
-            if (this.newComponentType === "page") {
-                // 如果当前新建的是页面组件的话 我们就要在页面组件中查找重名组件
+            for (let key in this.allPageComponents) {
+                // 遍历 this.allPageComponents 中的所有 key
 
-                for (let key in this.allPageComponents) {
-                    // 遍历 this.allPageComponents 中的所有 key
+                if (this.allPageComponents[key].name === this.newComponentName) {
+                    // 如果本 key 对应的对象中的 name 值和当前用户输入的内容重名了
 
-                    if (this.allPageComponents[key].name === this.newComponentName) {
-                        // 如果本 key 对应的对象中的 name 值和当前用户输入的内容重名了
+                    this.isDuplicateName = true;
+                    break;
+                } else {
+                    // 否则就是没重名
 
-                        this.isDuplicateName = true;
-                        break;
-                    } else {
-                        // 否则就是没重名
-
-                        this.isDuplicateName = false;
-                    }
+                    this.isDuplicateName = false;
                 }
             }
-            else if (this.newComponentType === "normal") {
-                // 如果当前新建的是普通组件的话 我们就要在普通组件中查找重名组件
 
-                for (let key in this.allNormalComponents) {
-                    // 遍历 this.allPageComponents 中的所有 key
+            for (let key in this.allNormalComponents) {
+                // 遍历 this.allPageComponents 中的所有 key
 
-                    if (this.allNormalComponents[key].name === this.newComponentName) {
-                        // 如果本 key 对应的对象中的 name 值和当前用户输入的内容重名了
+                if (this.allNormalComponents[key].name === this.newComponentName) {
+                    // 如果本 key 对应的对象中的 name 值和当前用户输入的内容重名了
 
-                        this.isDuplicateName = true;
-                        break;
-                    } else {
-                        // 否则就是没重名
-                        this.isDuplicateName = false;
-                    }
+                    this.isDuplicateName = true;
+                    break;
+                } else {
+                    // 否则就是没重名
+                    this.isDuplicateName = false;
                 }
-            }
-            else {
-                // 未知的组件类型 不需要进行下一步
-                console.log("unknown page type: ", this.newComponentType);
             }
         }
     },

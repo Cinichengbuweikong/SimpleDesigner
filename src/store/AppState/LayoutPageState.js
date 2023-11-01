@@ -120,6 +120,117 @@ export default {
 
             this.commit("LayoutPageState/SET_CURRENT_TAB", { id, type });
         },
+
+        SET_OPENED_COMPONENT_ORDER(
+            state, 
+            { 
+                sentryID, 
+                sentryType = null, 
+                compID,
+                compType = null, 
+                direction, 
+                moveToLast = false 
+            }
+        ) {
+            // 用于将给定的组件 id 对应的组件额外信息对象 放到指定 id 对应的组件额外信息对象的前面 / 后面
+            // sentryID: String  将会把用户指定的 id 对应的组件额外信息对象放在此 id 对应的组件额外信息对象的前面 / 后面
+            // sentryType: "design" | "code"  id 和 标签类型唯一确定一个标签 这个就是 sentryID 对应的标签的类型
+            // compID: String  需要改变位置的组件的 id
+            // compType: "design" | "code"  id 和 标签类型唯一确定一个标签 这个就是 compID 对应的标签的类型
+            // direction: "before" | "after" | "auto"  插入的位置  before 就是前面  after 就是后面  auto 就是让方法决定插在前面还是后面
+            // moveToLast: Boolean  是否需要将当前标签移动到标签列表的最末尾 当我们直接把标签拖动到标签栏上时我们就需要这么做
+
+            // 只有当 moveToLast === false 的时候 我们才需要传递 sentryType 和 compType 参数
+            // 当 moveToLast === true 时 我们只需传递 compType 即可
+
+
+            // 如果用户把标签拖动到了自己的身上的话 那接下来不需要做任何事情
+            if (sentryID === compID) {
+                return ;
+            }
+
+            // 如果需要把标签放到标签列表的最末尾的话
+            if (moveToLast) {
+                const newOpenedComponents = state.openedComponents.filter(
+                    comp => !(comp.id === compID && comp.type === compType)
+                    // 不能写成 comp.id !== compID && comp.type !== compType 哟!
+                    // 可以自己举个例子来想一想为什么不能写成上面这样
+                );
+                const targetCompnentExtraDataObject = state.openedComponents.filter(
+                    comp => comp.id === compID && comp.type === compType
+                )[0];
+
+                state.openedComponents = [ ...newOpenedComponents, targetCompnentExtraDataObject ];
+
+                return ;
+            }
+
+            // 如果 direction 不为 "before" | "after" | "auto" 的话 那接下来不需要做任何事情
+            if (direction !== "before" && direction !== "after" && direction !== "auto") {
+                console.log("未知的插入位置: ", direction);
+                return ;
+            }
+
+
+            // 新建一个包含了 opendedComponents 的容器
+            // 这个容器中没有 compID 对应的数据 因为 compID 对应的数据会在后续被插入到这里面
+            const newOpenedComponents = state.openedComponents.filter(
+                comp => !(comp.id === compID && comp.type === compType)
+            );
+
+            // 获取到 compID 对应的数据  后续会将其插入在 opendedComponents 内指定的位置中
+            const targetCompnentExtraDataObject = state.openedComponents.filter(
+                comp => comp.id === compID && comp.type === compType
+            )[0];
+            
+            // 找到数据需要被插入到的位置
+            const sentryIndex = newOpenedComponents.findIndex(
+                comp => comp.id === sentryID && comp.type === sentryType
+            );
+
+
+            if (direction === "before") {
+                // 如果需要在前面被插入的话
+                newOpenedComponents.splice(sentryIndex, 0, targetCompnentExtraDataObject);
+            }
+            else if (direction === "after") {
+                // 如果需要在后面被插入的话
+                newOpenedComponents.splice(sentryIndex + 1, 0, targetCompnentExtraDataObject);
+            }
+            else if (direction === "auto") {
+                // 根据 compIndex 和 sentryIndex 的位置来动态决定元素该插入到那里
+
+                // debugger;
+
+                const originalCompIndex = state.openedComponents.findIndex(
+                    comp => comp.id === compID && comp.type === compType
+                );
+                
+                const originalSentryIndex = state.openedComponents.findIndex(
+                    comp => comp.id === sentryID && comp.type === sentryType
+                );
+
+                if (originalCompIndex === -1) {
+                    console.log("未找到需要改变位置的组件的 id 的位置: ", originalCompIndex);
+                    return ;
+                }
+                else if (originalSentryIndex === -1) {
+                    console.log("未找到到相对于的组件的 id 的位置", originalSentryIndex);
+                    return ;
+                }
+
+                if (originalCompIndex > originalSentryIndex) {
+                    // 从后往前挪
+                    newOpenedComponents.splice(sentryIndex, 0, targetCompnentExtraDataObject);
+                }
+                else if (originalCompIndex < originalSentryIndex) {
+                    // 从前往后挪
+                    newOpenedComponents.splice(sentryIndex + 1, 0, targetCompnentExtraDataObject);
+                }
+            }
+
+            state.openedComponents = newOpenedComponents;
+        }
     },
 
     state: {

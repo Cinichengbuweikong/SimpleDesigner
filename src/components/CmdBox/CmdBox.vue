@@ -6,7 +6,23 @@
 
             <div class="cmdNotationBar">  <!-- 状态栏 -->
                 <div class="cmdNotationItem">  <!-- 状态项 -->
-                    using: {{ currentComponent ? currentComponent : "None" }}
+                    当前组件: {{ workingComponentID ? workingComponentID : "None" }}
+                </div>
+
+                <div class="cmdNotationItem">
+                    焦点位置: {{ focusPosition ? focusPosition : "None" }}
+                </div>
+
+                <div class="cmdNotationItem">
+                    宽/高: {{ width ? width : "None" }}/{{ height ? height : "None" }} px
+                </div>
+
+                <div class="cmdNotationItem">
+                    横纵比: {{ aspectRatio ? aspectRatio.x : "None" }}:{{ aspectRatio ? aspectRatio.y : "None" }}
+                </div>
+
+                <div class="cmdNotationItem" style="padding-top: 2px">
+                    DPR: {{ dpr ? dpr : "None" }}
                 </div>
             </div>
         </div>
@@ -21,6 +37,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"; 
 import CmdPanel from './CmdPanel.vue';
 
 export default {
@@ -44,16 +61,102 @@ export default {
     },
 
     computed: {
+        ...mapGetters({
+            currentActiveComponentExtraData: "LayoutPageState/getCurrentActiveComponentExtraData",
+        }),
+
         cssVars() {
             return {
                 "--cmdInputWidth": `${this.cmd.length * 10 + 1}px`
             };
+        },
+
+        workingComponentID() {
+            // 获取当前用户正在操作的组件的 id
+            if (this.currentActiveComponentExtraData === null) {
+                return null;
+            }
+
+            return this.currentActiveComponentExtraData.workingComponentID;
+        },
+
+        focusPosition() {
+            // 获取当前用户的焦点位置 取值 "designPage" | "designPort"  
+            // designPage 表示焦点位置在设计页 此时用户可以对 designer 组件的大小进行缩放
+            // designPort 表示焦点位置在设计视口中 我们认为 designerPort 即为 designer 组件
+            // 当焦点处在 designPort 中时 用户可以对 designer 组件中的 iframe 中的内容进行操作
+
+            if (this.currentActiveComponentExtraData === null) {
+                return null;
+            }
+
+            if (this.currentActiveComponentExtraData.focusPosition === "designPage") {
+                return "设计页";
+            } else if (this.currentActiveComponentExtraData.focusPosition === "designPort") {
+                return "设计视口";
+            } else {
+                console.log("未知的焦点位置: ", this.currentActiveComponentExtraData.focusPosition);
+
+                return "";
+            }
+        },
+
+        aspectRatio() {
+            // 获取当前被激活的组件的横纵比
+
+            if (this.currentActiveComponentExtraData === null) {
+                return null;
+            }
+
+            let [x, y] = this.currentActiveComponentExtraData.aspectRatio.split("/");
+            x = Number(x);
+            y = Number(y);
+
+            return {
+                x,
+                y
+            };
+        },
+
+        width() {
+            // 获取当前被激活的组件的宽
+
+            if (this.currentActiveComponentExtraData === null) {
+                return null;
+            }
+
+            return this.currentActiveComponentExtraData.width;
+        },
+
+        height() {
+            // 通过宽和横纵比来确定元素的高
+
+            if (this.currentActiveComponentExtraData === null) {
+                return null;
+            }
+
+            const { x, y } = this.aspectRatio;
+            const width = this.width;
+
+            return (width / x) * y;
+        },
+
+        dpr() {
+            // 获取当前页面的 dpr 值
+            // 例如 当 dpr 值为 2 时 即表示 1920x1080 大小的窗口实际以 960x540 的大小进行显示
+            // 此时我们的设计视口的大小就应该是 960x540 的
+
+            if (this.currentActiveComponentExtraData === null) {
+                return null;
+            }
+
+            return this.currentActiveComponentExtraData.dpr;
         }
     },
 
     components: {
         CmdPanel
-    }
+    },
 }
 </script>
 
@@ -82,14 +185,20 @@ export default {
             align-items: center;
 
             .cmdNotationItem {
-                margin: 0 10px;
-                padding: 0 10px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                height: 100%;
+
+                margin: 0 8px;
 
                 color: $textColor;
                 font-size: 14px;
 
                 &:first-child {
-                    margin: 0;
+                    margin-left: 8px;
                 }
             }
         }

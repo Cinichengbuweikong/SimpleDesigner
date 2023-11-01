@@ -84,6 +84,10 @@ export default {
 
     components: {
       codemirror
+    },
+
+    async mounted() {
+      // const pack = await import("vue-template-ast");
     }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
     <div class="designerView">  <!-- 设计视口盒子 -->
         <div class="designer" :style="cssVars">
-            <iframe src="" frameborder="0"></iframe>
+            <iframe src="" frameborder="0" @click="f"></iframe>
             <canvas style="width: 100%; height: 100%; position: absolute; pointer-events: none;"></canvas>
         </div>
     </div>
@@ -31,6 +31,12 @@ export default {
             type: Object,
             required: true,
         },
+    },
+
+    methods: {
+        f() {
+            console.log("iframe focus");
+        }
     },
 
     computed: {
@@ -74,6 +80,8 @@ export default {
 
         position: relative;
         margin: 15px;
+
+        pointer-events: none;
 
         iframe {
             width: 100%;

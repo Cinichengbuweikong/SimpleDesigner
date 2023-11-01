@@ -14,8 +14,10 @@
 <script>
 import { mapState } from "vuex";
 
+import ComponentMenuDialog from './DialogContent/ComponentMenuDialog.vue';
 import DeleteComponentDialog from './DialogContent/DeleteComponentDialog.vue';
 import NewComponentDialog from './DialogContent/NewComponentDialog.vue';
+import RenameComponentDialog from './DialogContent/RenameComponentDialog.vue';
 
 
 export default {
@@ -43,8 +45,8 @@ export default {
         cssVars() {
             return {
                 "--enableMaskPointerEvents": this.dialogState.dialogData.maskPointerEvents ? "auto" : "none",
-                "--dialogLeft": `${this.dialogState.dialogData.left}%`,
-                "--dialogTop": `${this.dialogState.dialogData.top}%`,
+                "--dialogLeft": `${this.dialogState.dialogData.left}px`,
+                "--dialogTop": `${this.dialogState.dialogData.top}px`,
                 "--dialogPadding": `${this.dialogState.dialogData.padding}px`,
                 "--dialogMaskBackgroundColor": `${this.dialogState.dialogData.maskBackgroundColor}`,
             };
@@ -58,7 +60,9 @@ export default {
 
     components: {
         NewComponentDialog,
-        DeleteComponentDialog
+        DeleteComponentDialog,
+        ComponentMenuDialog,
+        RenameComponentDialog
     },
 }
 </script>
@@ -91,7 +95,6 @@ export default {
             position: absolute;
             left: var(--dialogLeft);
             top: var(--dialogTop);
-            transform: translate(calc(var(--dialogLeft) * -1), calc(var(--dialogTop) * -1));
 
             background-color: $barBackgroundColor;
             

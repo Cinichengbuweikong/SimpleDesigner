@@ -1,5 +1,9 @@
 <template>
-  <div class="tabBar">  <!-- 标签栏 -->
+  <div
+    class="tabBar"
+    @dragover.stop="onDragOver"
+    @drop.stop="onDrop"
+  >  <!-- 标签栏 -->
     <!-- 定义 ${comp.id}_${comp.type} 为标签项的 id -->
     <TabBarItem
       v-for="comp in openedComponents"
@@ -9,6 +13,8 @@
       :itemName="getComponentName(comp.id)"
       :itemType="comp.type"
       :isActive="comp.id === currentTab.id && comp.type === currentTab.type"
+      :BeforePageChange="BeforePageChange"
+      :AfterPageChange="AfterPageChange"
     />
   </div>
 </template>
@@ -19,6 +25,20 @@ import TabBarItem from './TabBarItem.vue';
 
 export default {
   name: "TabBarComponent",
+
+  props: {
+    BeforePageChange: {
+      // 在标签页切换之前所执行的函数 需要传递给 TabItem
+      type: Function,
+      default: (toID, type, actionType) => {}
+    },
+
+    AfterPageChange: {
+      // 在标签页切换之后所执行的函数 需要传递给 TabItem
+      type: Function,
+      default: (fromID, type, actionType) => {}
+    },
+  },
 
   methods: {
     getComponentName(compid) {
@@ -34,11 +54,47 @@ export default {
       else {
         return `ERR: NONAME: ${compid}`;
       }
-    }
-  },
+    },
 
-  components: {
-    TabBarItem
+    onDragOver(event) {
+      // 需要关闭掉 dragOver 的默认行为后 我们才能将元素拖拽到此栏上
+
+      try {
+        const { type, id } = JSON.parse(event.dataTransfer.getData("Text"));
+
+        // 可以将标签栏上的标签和组件面板中的组件项拖动到标签栏上
+        if (type && (type === "TabBarItem" || type === "ComponentPanelItem")) {
+            event.preventDefault();
+        }
+      } catch {
+        return ;
+      }
+    },
+
+    onDrop(event) {
+      // 被拖动到标签栏上的元素 就相当于时需要将该元素放到列表的末尾
+      const data = JSON.parse(event.dataTransfer.getData("Text"));
+
+      if (data.type === "TabBarItem") {
+        this.$store.commit("LayoutPageState/SET_OPENED_COMPONENT_ORDER", {
+            sentryID: this.itemid,
+            compID: data.id,
+            compType: data.itemType,
+            moveToLast: true
+        });
+
+        return ;
+      }
+
+      if (data.type === "ComponentPanelItem") {
+        this.$store.commit("LayoutPageState/ADD_OPENED_COMPONENT", {
+          id: data.id,
+          type: "design"
+        });
+
+        return ;
+      }
+    }
   },
 
   computed: {
@@ -51,6 +107,10 @@ export default {
       allPageComponents: state => state.components.pageComponents,
       allNormalComponents: state => state.components.normalComponents
     }),
+  },
+
+  components: {
+    TabBarItem
   },
 }
 </script>

@@ -13,6 +13,7 @@
     "vue": "^2.6.14",
     "vue-codemirror": "4",
     "vue-router": "3",
+    "vue-template-ast": "^1.0.6",
     "vuex": "3"
   },
   "devDependencies": {

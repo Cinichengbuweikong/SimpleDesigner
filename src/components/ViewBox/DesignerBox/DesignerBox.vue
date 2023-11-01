@@ -50,6 +50,18 @@ export default {
         };
     },
 
+    props: {
+        RegisterBeforePageChangeHandler: {
+            type: Function,
+            defualt: (key, handler) => {}
+        },
+
+        RegisterAfterPageChangeHandler: {
+            type: Function,
+            defualt: (key, handler) => {}
+        },
+    },
+
     methods: {
         onDesignerBoxAltKeyDown(event) {
             // 我们希望可以实现在用户按下 alt 键而后滚动鼠标滚轮的时候 我们可以对 Designer 组件的大小进行调整
@@ -147,9 +159,15 @@ export default {
             this.$refs.designerBoxRef.addEventListener("wheel", onWheel);
         },
 
-        onDesignerBoxClick() {
+        onDesignerBoxClick(event) {
+            console.log("assad");
+            
             // 当用户点击 div.designerBox 时 设置将焦点移动到 div.designerBox 上
             this.$refs.designerBoxRef.focus();
+
+            this.$store.commit("LayoutPageState/SET_CURRENT_COMPONENT_EXTRA_DATA", {
+                focusPosition: "designPage"
+            });
         },
     },
 
@@ -207,6 +225,14 @@ export default {
         const elementInnerWidth = designerElem.offsetWidth;
 
         this.scrollBarWidth = elementOuterWidth - elementInnerWidth;
+
+        this.RegisterBeforePageChangeHandler("DesignerBoxBeforePageChange", (toID, type, actionType) => {
+            console.log("at DesignerBox!", toID, type, actionType);
+        });
+
+        this.RegisterAfterPageChangeHandler("DesignerBoxAfterPageChange", (fromID, type, actionType) => {
+            console.log("at DesignerBox!", fromID, type, actionType);
+        });
     },
 }
 </script>

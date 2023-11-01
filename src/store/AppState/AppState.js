@@ -81,7 +81,45 @@ export default {
             } else {
                 // 很奇怪 给定的组件 id 不在 pageComponents 和 normalComponents 中
                 // 那就 console.log() 一下 id 就行了
-                console.log("unknow component id: ", componentID);
+                console.log("未知的组件 id : ", componentID);
+            }
+        },
+
+        MOVE_COMPONENT(state, { componentID, targetComponentType }) {
+            // 将指定 componentID 所指向的对象修改为指定的类型
+            // componentID: String  需要被挪动的组件对象的 id
+            // targetComponentType: "page" | "normal"  需要将组件移动到哪个组件类别下
+
+            // 如果需要移动到的组件的类别不存在的话 那就返回就行了
+            if (targetComponentType !== "page" && targetComponentType !== "normal") {
+                return ;
+            }
+
+            if (state.components.pageComponents[componentID] && targetComponentType !== "page") {
+                const componentObject = state.components.pageComponents[componentID];
+                componentObject.type = targetComponentType;
+
+                const newPageComponents = { ...state.components.pageComponents };
+                delete newPageComponents[componentID];
+
+                const newNormalComponents = { ...state.components.normalComponents };
+                newNormalComponents[componentID] = componentObject;
+
+                state.components.pageComponents = newPageComponents;
+                state.components.normalComponents = newNormalComponents;
+            }
+            else if (state.components.normalComponents[componentID] && targetComponentType !== "normal") {
+                const componentObject = state.components.normalComponents[componentID];
+                componentObject.type = targetComponentType;
+
+                const newNormalComponents = { ...state.components.normalComponents };
+                delete newNormalComponents[componentID];
+
+                const newPageComponents = { ...state.components.pageComponents };
+                newPageComponents[componentID] = componentObject;
+
+                state.components.pageComponents = newPageComponents;
+                state.components.normalComponents = newNormalComponents;
             }
         },
 
@@ -93,8 +131,8 @@ export default {
             //   show: Boolean  是否显示对话框
             //   dialogCompName: String  要遭对话框中显示的组件的名字
             //   maskPointerEvents: Boolean  设置覆盖层是否响应鼠标事件 默认不响应
-            //   left: Number  对话框距屏幕左上角的横轴距离  百分比
-            //   top: Number  对话框距屏幕左上角的纵轴距离  百分比
+            //   left: Number  对话框距屏幕左上角的横轴距离  px
+            //   top: Number  对话框距屏幕左上角的纵轴距离  px
             //   padding: Number  对话框的内边距  px 计
             //   maskBackgroundColor: String  覆盖层的背景色 默认透明
 
@@ -148,7 +186,42 @@ export default {
             }
 
             state.dialog.DeleteComponentDialogData.deleteComponentID = deleteComponentID;
-        }
+        },
+
+        SET_COMPONENT_MENU_DIALOG_DATA(state, { componentID, componentType }) {
+            // 设置在 "组件面板" 的组件项上右键时显示的组件菜单对话框所需的数据
+            // componentID: String  被右键的组件的 id
+            // componentType: "page" | "normal"  被右键的组件的类型
+
+            if (componentType !== "page" && componentType !== "normal") {
+                // 未知类型 不需要进行下一步了
+                return ;
+            }
+
+            state.dialog.ComponentMenuDialogData.targetCompnentID = componentID;
+            state.dialog.ComponentMenuDialogData.targetComponentType = componentType;
+        },
+
+        SET_COMPONENT_MENU_DIALOG_DATA(state, { componentID, componentType }) {
+            // 设置在 "组件面板" 的组件项上右键时显示的组件菜单对话框所需的数据
+            // componentID: String  被右键的组件的 id
+            // componentType: "page" | "normal"  被右键的组件的类型
+
+            if (componentType !== "page" && componentType !== "normal") {
+                // 未知类型 不需要进行下一步了
+                return ;
+            }
+
+            state.dialog.ComponentMenuDialogData.targetCompnentID = componentID;
+            state.dialog.ComponentMenuDialogData.targetComponentType = componentType;
+        },
+
+        SET_COMPONENT_RENAME_DIALOG_DATA(state, { componentID }) {
+            // 设置组件重命名对话框所需的数据
+            // componentID: String  需要重名名的组件的 id
+
+            state.dialog.ComponentRenameDialogData.targetCompnentID = componentID;
+        },
     },
 
     state: {
@@ -159,6 +232,7 @@ export default {
                 // 本对象中 key 组件的唯一 id, val 是一个对象 保存当前组件的数据
                 // 这个所需存储的对象的结构见 ./src/utils/newComponentData.js
             },
+
             normalComponents: {
                 // 保存普通组件数据
                 // 本对象中 key 是组件的唯一 id, val 是一个对象 保存当前组件的数据
@@ -207,6 +281,23 @@ export default {
 
                 // 要新建的组件的id
                 deleteComponentID: "",
+            },
+
+            ComponentMenuDialogData: {
+                // 存储在 "组件面板" 的组件项上右键时显示的组件菜单对话框所需的数据
+
+                // 在哪个组件项上右键? 这里存储被右键的组件项的 id
+                targetCompnentID: "",
+
+                // 被右键的组件项的类型 取值 "page" | "normal"
+                targetComponentType: "",
+            },
+
+            ComponentRenameDialogData: {
+                // 存储重命名对话框中的数据
+
+                // 需要被重命名的组件的 id
+                targetCompnentID: "",
             }
         }
     },
