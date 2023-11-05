@@ -13,10 +13,12 @@
 
 <script>
 import { mapState } from "vuex";
-
+import CloseProjectDialog from './DialogContent/CloseProjectDialog.vue';
 import ComponentMenuDialog from './DialogContent/ComponentMenuDialog.vue';
 import DeleteComponentDialog from './DialogContent/DeleteComponentDialog.vue';
+import HasOpenedProjectDialog from './DialogContent/HasOpenedProjectDialog.vue';
 import NewComponentDialog from './DialogContent/NewComponentDialog.vue';
+import NewProjectDialog from './DialogContent/NewProjectDialog.vue';
 import RenameComponentDialog from './DialogContent/RenameComponentDialog.vue';
 
 
@@ -62,7 +64,10 @@ export default {
         NewComponentDialog,
         DeleteComponentDialog,
         ComponentMenuDialog,
-        RenameComponentDialog
+        RenameComponentDialog,
+        NewProjectDialog,
+        CloseProjectDialog,
+        HasOpenedProjectDialog
     },
 }
 </script>

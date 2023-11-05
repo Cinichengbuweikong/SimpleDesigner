@@ -87,7 +87,6 @@ export default {
     },
 
     async mounted() {
-      // const pack = await import("vue-template-ast");
     }
 }
 </script>

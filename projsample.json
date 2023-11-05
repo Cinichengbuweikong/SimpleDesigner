@@ -1,0 +1,20 @@
+{
+    "type": "simpleDesignerProject",
+    "settings": {},
+    "components": {
+        "pageComponents": {
+            "componentsID": {
+                "metaData": {},  // 元信息 包含组件的名字 组件的 id  组件的类型之类的东西
+                "extraData": {},  // 存储组件的额外信息
+                "content": {
+                    "template": {},  // 模板的 ast 
+                    "script": {},  // js 代码的 ast
+                    "style": {}  // 样式的 ast
+                }
+            }
+        },
+        "normalComponents": {
+
+        }
+    } 
+}

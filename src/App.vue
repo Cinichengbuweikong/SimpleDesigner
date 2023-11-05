@@ -1,10 +1,33 @@
 <template>
   <div id="app">
-    <header class="menuBar">
+    <header class="menuBar" :style="cssVars">
       <ul>
-        <li>文件</li>
-        <li>窗口</li>
-        <li>关于</li>
+        <li>
+          <p>设置</p>
+
+          <div class="menuPanel">
+            <p @click="toggleAutoShowRulerBar">默认显示标尺: {{this.autoShowRulerBar}}</p>
+            <p>设置默认模板代码</p>
+          </div>
+        </li>
+        
+        <li>
+          <p>命令</p>
+
+          <div class="menuPanel">
+            <p>重启 Vue 服务</p>
+            <p>查看 Vue CLI 输出信息</p>
+          </div>
+        </li>
+        
+        <li>
+          <p>关于</p>
+
+          <div class="menuPanel">
+            <p style="cursor: pointer">教我使用本应用!</p>
+            <p style="cursor: pointer">关于本应用</p>
+          </div>
+        </li>
       </ul>
     </header>
 
@@ -55,10 +78,45 @@ import Dialog from './components/Dialog/Dialog.vue';
 export default {
   name: 'App',
 
+  methods: {
+    toggleAutoShowRulerBar() {
+      // 切换 "是否自动显示标尺" 的状态
+
+      if (this.projectInfo === null) {
+        return ;
+      }
+
+      this.$store.commit("AppState/MODIFY_PROJECT_INFO", {
+        keys: ["projectSetting", "rulerBar"],
+        value: !this.projectInfo.projectSetting.rulerBar
+      });
+    }
+  },
+
   computed: {
     ...mapState("AppState", {
       showDialog: state => state.dialog.dialogData.show,
-    })
+      projectInfo: state => state.projectInfo,
+    }),
+
+    cssVars() {
+      return {
+        "--menuPanelItemCursor": this.projectInfo === null ? "not-allowed" : "pointer",
+      };
+    },
+
+    autoShowRulerBar() {
+      // 显示 "是否自动显示标尺" 这项设置的状态
+      if (this.projectInfo === null) {
+          return "开";
+      }
+
+      if (this.projectInfo.projectSetting.rulerBar) {
+          return "开";
+      } else {
+          return "关";
+      }
+    }
   },
 
   components: {
@@ -78,7 +136,7 @@ html, body {
 
   display: flex;
   flex-direction: column;
-
+  
   .menuBar {
     height: 22px;
     background-color: $barBackgroundColor;
@@ -99,8 +157,43 @@ html, body {
 
         cursor: default;
 
+        position: relative;
+
         &:hover {
           background-color: $barItemHoverBackgroundColor;
+          
+          & .menuPanel {
+            display: flex;
+          }
+        }
+
+        .menuPanel {
+          position: absolute;
+          left: 0;
+          top: 100%;
+
+          width: 200px;
+
+          display: none;
+          flex-direction: column;
+
+          background-color: $barBackgroundColor;
+
+          border: 1px solid $foregroundColor;
+          border-radius: 3px;
+
+          // 由于此时菜单已经溢出到 main 元素内去显示了
+          // 因此为了防止 main 元素把菜单盖住了 这里需要把菜单的层级提升一下
+          z-index: 200;
+
+          p {
+            padding: 5px 10px;
+            cursor: var(--menuPanelItemCursor);
+
+            &:hover {
+              background-color: $barItemHoverBackgroundColor;
+            }
+          }
         }
       }
     }

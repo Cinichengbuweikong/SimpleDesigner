@@ -1,9 +1,11 @@
 // 存储应用本身的状态 例如打开了哪个面板 开启了哪些设置等
 
-import newComponentData from "../../utils/newComponentData.js";
 
 // 用于生成新组件的 id
 import { nanoid } from "nanoid";
+
+import newComponentData from "../../utils/newComponentData.js";
+import newProject from "../..//utils/newProject.js";
 
 
 export default {
@@ -12,6 +14,49 @@ export default {
     actions: {},
 
     mutations: {
+        // 项目
+        CREATE_PROJECT(state, projectName) {
+            // 新建项目
+            // projectName: String  新项目名
+
+            const newProjectObject = newProject(projectName);
+
+            state.projectInfo = newProjectObject;
+        },
+
+        IMPORT_PROJECT(state) {},
+
+        SAVE_PROJECT(state) {},
+
+        CLOSE_PROJECT(state) {
+            // 关闭项目
+
+            // 删除项目信息:
+            state.projectInfo = null;
+
+            // 删除组件信息
+            state.components.pageComponents = {};
+            state.components.normalComponents = {};
+        },
+
+        MODIFY_PROJECT_INFO(state, { keys, value }) {
+            // 修改项目信息
+            // keys: Array<String>  包含要被修改的属性的 key 们
+            //   例如 ["projectName"] 表示要修改 state.projectInfo.projectName
+            //   例如 ["projectSetting", "enableRulerBar"] 表示要修改 state.projectInfo.projectSetting.enableRulerBar
+            // value: Any  要将属性修改为的值
+
+            let ref = state.projectInfo;
+
+            for (let i=0; i<keys.length-1; i++) {
+                const key = keys[i];
+                ref = ref[key];
+            }
+
+            ref[keys[keys.length - 1]] = value;
+        },
+
+
         // 组件
         ADD_COMPONENT(state, {componentName, componentType}) {
             // 新建组件 并将新建的组件的对象保存在 state.components.xxxComponents 中
@@ -222,9 +267,25 @@ export default {
 
             state.dialog.ComponentRenameDialogData.targetCompnentID = componentID;
         },
+
+        SET_HAS_OPENED_PROJECT_DIALOG_DATA(state, { nextAction }) {
+            // 设置 "提醒用户已经打开一个项目了" 对话框所需的数据
+            // nextAction: Function  当用户需要进行下一步时的回调函数
+
+            if (!nextAction) {
+                return ;
+            }
+
+            state.dialog.HasOpenedProjectDialogData.nextAction = nextAction;
+        }
     },
 
     state: {
+        // 保存关于当前项目的信息
+        // 该属性取值 null | Object
+        // Object 的具体结果见 ./utils/newProject.js
+        projectInfo: null,
+
         components: {
             // 保存组件数据
             pageComponents: {
@@ -298,6 +359,13 @@ export default {
 
                 // 需要被重命名的组件的 id
                 targetCompnentID: "",
+            },
+
+            HasOpenedProjectDialogData: {
+                // 存储 "提醒用户已经打开一个项目了" 对话框所需的数据
+
+                // 当用户需要进行下一步时的回调函数
+                nextAction: () => {}
             }
         }
     },

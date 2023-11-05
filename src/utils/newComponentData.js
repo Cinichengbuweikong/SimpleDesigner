@@ -10,6 +10,22 @@ export default function(id, name, type) {
         id: id,  // 组件 id
         name: name,  // 组件的名字
         type: type,  // 组件的类型
-        code: `<template>\n</template>\n\n<script>\nexport defualt {\n    name: "${compName}"\n};\n</script>\n\n<style lang="scss" scoped>\n</style>`,
+        code: `
+<template>
+    <div class="${compName}Box"></div>
+</template>
+
+<script>
+    export defualt {
+        name: "${compName}"
+    };
+</script>
+
+<style lang="scss" scoped>
+.${compName}Box {
+    /* 注: 如果需要自己写样式的话 请把样式都写在此类下 否则解析器无法正确解析我们的样式代码 */
+}
+</style>
+`,  // 默认模板中的代码
     };
 }
