@@ -20,6 +20,7 @@ import HasOpenedProjectDialog from './DialogContent/HasOpenedProjectDialog.vue';
 import NewComponentDialog from './DialogContent/NewComponentDialog.vue';
 import NewProjectDialog from './DialogContent/NewProjectDialog.vue';
 import RenameComponentDialog from './DialogContent/RenameComponentDialog.vue';
+import SetDefaultComponentCodeDialog from './DialogContent/SetDefaultComponentCodeDialog.vue';
 
 
 export default {
@@ -67,7 +68,8 @@ export default {
         RenameComponentDialog,
         NewProjectDialog,
         CloseProjectDialog,
-        HasOpenedProjectDialog
+        HasOpenedProjectDialog,
+        SetDefaultComponentCodeDialog
     },
 }
 </script>

@@ -26,6 +26,17 @@ import TabBarItem from './TabBarItem.vue';
 export default {
   name: "TabBarComponent",
 
+  data() {
+    const vuexState = mapState(this.stateName, {
+      openedComponents: state => state.openedComponents,
+      currentTab: state => state.tabBar.currentTab,
+    });
+
+    return {
+      vuexState
+    };
+  },
+
   props: {
     BeforePageChange: {
       // 在标签页切换之前所执行的函数 需要传递给 TabItem
@@ -38,6 +49,13 @@ export default {
       type: Function,
       default: (fromID, type, actionType) => {}
     },
+
+    stateName: {
+        // 本组件需要使用哪个 state 下的标签栏数据 ?
+        // 取值各个 state 命名空间的名字 例如 "LayoutPageState"
+        type: String,
+        required: true
+    }
   },
 
   methods: {
@@ -98,15 +116,18 @@ export default {
   },
 
   computed: {
-    ...mapState("LayoutPageState", {
-      openedComponents: state => state.openedComponents,
-      currentTab: state => state.tabBar.currentTab,
-    }),
-
     ...mapState("AppState", {
       allPageComponents: state => state.components.pageComponents,
       allNormalComponents: state => state.components.normalComponents
     }),
+
+    openedComponents() {
+      return this.vuexState.openedComponents.call(this);
+    },
+
+    currentTab() {
+      return this.vuexState.currentTab.call(this);
+    }
   },
 
   components: {

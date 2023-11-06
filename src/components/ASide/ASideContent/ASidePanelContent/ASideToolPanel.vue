@@ -25,16 +25,36 @@ import { mapState } from "vuex";
 export default {
     name: "layoutAsideToolPanelComponent",
 
-    methods: {
-    },
-
-    computed: {
-        ...mapState('LayoutPageState', {
+    data() {
+        const vuexState = mapState(this.stateName, {
             // 获取到所有打开的标签
             allOpenedComponents: state => state.openedComponents,
             // 当前活动的标签
             currentTab: state => state.tabBar.currentTab
-        }),
+        });
+
+        return {
+            vuexState
+        };
+    },
+
+    props: {
+        stateName: {
+            // 本组件需要使用哪个 state 下的侧边栏数据 ?
+            // 取值各个 state 命名空间的名字 例如 "LayoutPageState"
+            type: String,
+            required: true
+        }
+    },
+
+    computed: {
+        allOpenedComponents() {
+            return this.vuexState.allOpenedComponents.call(this);
+        },
+
+        currentTab() {
+            return this.vuexState.currentTab.call(this);
+        },
 
         rulerBarState: {
             get() {
@@ -57,7 +77,7 @@ export default {
 
             set(value) {
                 this.$store.commit(
-                    "LayoutPageState/SET_CURRENT_COMPONENT_EXTRA_DATA", 
+                    `${this.stateName}/SET_CURRENT_COMPONENT_EXTRA_DATA`, 
                     {
                         key: "enableRulerBar",
                         value

@@ -1,38 +1,42 @@
 <template>
     <div class="viewBox">  <!-- 整个右侧盒子 -->
-        <TabBar
+        <!-- 标签栏插槽 -->
+        <slot
+            name="tabBarSlot"
             :BeforePageChange="beforePageChange"
             :AfterPageChange="afterPageChange"
-        />
+        >
+        </slot>
 
-        <DesignerBox
-            v-if="currentTab !== null && currentTab.type === 'design' "
+        <!-- 设计视口插槽 -->
+        <slot
+            name="designerBoxSlot"
             :RegisterBeforePageChangeHandler="registerBeforePageChangeHandler"
             :RegisterAfterPageChangeHandler="registerAfterPageChangeHandler"
-        />
+            :show="currentTab !== null && currentTab.type === 'design'"
+        >
+        </slot>
 
-        <CodeBox
-            v-if="currentTab !== null && currentTab.type === 'code' "
+        <!-- 代码页插槽 -->
+        <slot
+            name="codeBoxSlot"
             :RegisterBeforePageChangeHandler="registerBeforePageChangeHandler"
             :RegisterAfterPageChangeHandler="registerAfterPageChangeHandler"
-        />
+            :show="currentTab !== null && currentTab.type === 'code'"
+        >
+        </slot>
 
         <div
             class="blankInfo"
             v-if="currentTab === null"
         >
-            <h1>请先创建或打开一个组件</h1>
+            <slot name="blankInfoSlot"></slot>
         </div>
     </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-
-import DesignerBox from './DesignerBox/DesignerBox.vue';
-import CodeBox from './CodeBox.vue';
-import TabBar from './TabBar/TabBar.vue';
-
 
 export default {
     name: "ViewBoxComponent",
@@ -131,12 +135,6 @@ export default {
                 return state.tabBar.currentTab;
             },
         })
-    },
-
-    components: {
-        TabBar,
-        DesignerBox,
-        CodeBox
     }
 }
 </script>
@@ -144,6 +142,9 @@ export default {
 <style lang="scss" scoped>
 .viewBox {
     flex-grow: 1;
+
+    width: 100%;
+    height: 100%;
 
     display: flex;
     flex-direction: column;

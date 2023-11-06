@@ -1,13 +1,13 @@
 <template>
-  <div id="app">
-    <header class="menuBar" :style="cssVars">
+  <div id="app" :style="cssVars">
+    <header class="menuBar">
       <ul>
         <li>
           <p>设置</p>
 
           <div class="menuPanel">
             <p @click="toggleAutoShowRulerBar">默认显示标尺: {{this.autoShowRulerBar}}</p>
-            <p>设置默认模板代码</p>
+            <p @click="setComponentCode">设置默认模板代码</p>
           </div>
         </li>
         
@@ -37,7 +37,7 @@
 
     <footer>
       <nav>
-        <router-link to="/">
+        <router-link to="/" style="cursor: pointer;">
           <i class="iconfont icon-add_px_rounded"></i>
           新建
         </router-link>
@@ -57,7 +57,7 @@
           动画
         </router-link>
 
-        <router-link to="/">
+        <router-link to="/export">
           <i class="iconfont icon-save_alt_px_rounded"></i>
           导出
         </router-link>
@@ -90,6 +90,23 @@ export default {
         keys: ["projectSetting", "rulerBar"],
         value: !this.projectInfo.projectSetting.rulerBar
       });
+    },
+
+    setComponentCode(event) {
+      // 显示 "修改组件默认代码" 对话框
+
+      if (this.projectInfo === null) {
+        return ;
+      }
+
+      const { clientX, clientY } = event;
+
+      this.$store.commit("AppState/SET_DIALOG_STATE", {
+        show: true,
+        dialogCompName: "SetDefaultComponentCodeDialog",
+        left: clientX,
+        top: clientY
+      });
     }
   },
 
@@ -102,6 +119,7 @@ export default {
     cssVars() {
       return {
         "--menuPanelItemCursor": this.projectInfo === null ? "not-allowed" : "pointer",
+        "--navItemCursor": this.projectInfo === null ? "not-allowed" : "pointer",
       };
     },
 
@@ -233,6 +251,8 @@ html, body {
 
         margin: 0 10px;
         padding: 0 30px;
+
+        cursor: var(--navItemCursor);
 
         &:hover {
           background-color: $barItemHoverBackgroundColor;

@@ -14,7 +14,7 @@
 
 <script>
 export default {
-    name: "ASideBarComponent",
+    name: "ASideComponent",
 }
 </script>
 
@@ -39,66 +39,6 @@ aside {
         align-items: center;
 
         z-index: 100;
-
-        :deep(ul) {
-            width: 100%;
-            height: 100%;
-            list-style: none;
-
-            li {
-                width: calc(100% - 3px);
-                height: 50px;
-                border-left: 3px solid transparent;
-
-                position: relative;
-
-                cursor: pointer;
-
-                &:hover > span {
-                    display: block;
-                    opacity: 1;
-                }
-
-                &.active {
-                    border-left: 3px solid $actionColor;
-                }
-
-                i {
-                    font-size: 30px;
-                    color: $textColor;
-
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                }
-
-                span {
-                    display: block;
-                    
-                    width: 40px;
-
-                    position: absolute;
-                    left: calc(100% + 3px);
-                    top: 50%;
-                    transform: translateY(-50%);
-
-                    border: 1px solid $textColor;
-                    border-radius: 3px;
-
-                    color: $textColor;
-                    text-align: center;
-                    font-size: 14px;
-
-                    opacity: 0;
-                    display: none;
-
-                    background-color: $backgroundColor;
-
-                    transition: opacity 0.2s;
-                }
-            }
-        }
     }
 
     .toolPanel {

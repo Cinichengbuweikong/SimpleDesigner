@@ -6,28 +6,34 @@
         @click="onDesignerBoxClick"
         tabindex="-1"
     >  <!-- 设计视口 -->
-        <Designer
-            ref="designerRef"
+
+        <!-- 设计组件插槽 -->
+        <slot
+            name="designerSlot"
             :DesignerPointEvents="designer.pointEvents"
             :CurrentComponentData="currentComponentData"
             :CurrentComponentExtraData="currentComponentExtraData"
-        />
+        >
+        </slot>
 
-        <RulerBar
-            v-if="currentComponentExtraData.enableRulerBar"
+        <!-- 标尺组件插槽 -->
+        <slot
+            name="rulerBarSlot"
+            :show="currentComponentExtraData.enableRulerBar"
             :ScrollBarWidth="designer.scrollBarWidth"
-        />
+        >
+        </slot>
 
-        <CmdBox />
+        <!-- 命令输入面板插槽 -->
+        <slot
+            name="cmdBoxSlot"
+        >
+        </slot>
     </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-
-import Designer from './Designer.vue';
-import RulerBar from './RulerBar.vue';
-import CmdBox from '../../CmdBox/CmdBox.vue';
 
 
 // 这个变量用于缓存 designerBox 上的 alt key 是否被按下
@@ -39,7 +45,22 @@ export default {
     name: "designerBoxComponent",
 
     data() {
+        const vuexState = mapState(this.stateName, {
+            currentTab: state => {
+                // 获取存储在 LayoutPageState 中的当前激活的组件的信息
+                return state.tabBar.currentTab;
+            },
+            
+            allOpenedComponents: state => {
+                // 获取存储在 LayoutPageState 中的所有打开的组件的额外信息
+                // 额外信息指的就是类似于 "Designer 内 iframe 的大小" 这样的信息
+                return state.openedComponents;
+            }
+        });
+
         return {
+            vuexState,
+
             designer: {
                 // 控制是否让 Designer 组件下的 iframe 响应 pointer-events
                 pointEvents: true,
@@ -60,6 +81,18 @@ export default {
             type: Function,
             defualt: (key, handler) => {}
         },
+
+        designerRef: {
+            type: Object,
+            default: null
+        },
+
+        stateName: {
+            // 本组件需要使用哪个 state 下的数据 ?
+            // 取值各个 state 命名空间的名字 例如 "LayoutPageState"
+            type: String,
+            required: true
+        }
     },
 
     methods: {
@@ -172,24 +205,19 @@ export default {
     },
 
     computed: {
-        ...mapState("LayoutPageState", {
-            currentTab: state => {
-                // 获取存储在 LayoutPageState 中的当前激活的组件的信息
-                return state.tabBar.currentTab;
-            },
-            
-            allOpenedComponents: state => {
-                // 获取存储在 LayoutPageState 中的所有打开的组件的额外信息
-                // 额外信息指的就是类似于 "Designer 内 iframe 的大小" 这样的信息
-                return state.openedComponents;
-            }
-        }),
-
         ...mapState("AppState", {
             // 获取存储在 AppState 中的组件数据
             allPageComponents: state => state.components.pageComponents,
             allNormalComponents: state => state.components.normalComponents,
         }),
+        
+        currentTab() {
+            return this.vuexState.currentTab.call(this);
+        },
+
+        allOpenedComponents() {
+            return this.vuexState.allOpenedComponents.call(this);
+        },
 
         currentComponentData() {
             // 获取当前被激活的组件的数据
@@ -211,28 +239,24 @@ export default {
         }
     },
 
-    components: {
-        Designer,
-        RulerBar,
-        CmdBox,
-    },
-
     mounted() {
-        // 计算 Designer 组件内的滚动条的宽度 已让 RulerBar 组件避开滚动条
-        const designerElem = this.$refs.designerRef.$el;
+        if (this.designerRef !== null) {
+            // 计算 Designer 组件内的滚动条的宽度 以让 RulerBar 组件避开滚动条
+            const designerElem = this.designerRef.$el;
 
-        const elementOuterWidth = designerElem.clientWidth;
-        const elementInnerWidth = designerElem.offsetWidth;
+            const elementOuterWidth = designerElem.clientWidth;
+            const elementInnerWidth = designerElem.offsetWidth;
 
-        this.scrollBarWidth = elementOuterWidth - elementInnerWidth;
+            this.scrollBarWidth = elementOuterWidth - elementInnerWidth;
 
-        this.RegisterBeforePageChangeHandler("DesignerBoxBeforePageChange", (toID, type, actionType) => {
-            console.log("at DesignerBox!", toID, type, actionType);
-        });
+            this.RegisterBeforePageChangeHandler("DesignerBoxBeforePageChange", (toID, type, actionType) => {
+                console.log("at DesignerBox!", toID, type, actionType);
+            });
 
-        this.RegisterAfterPageChangeHandler("DesignerBoxAfterPageChange", (fromID, type, actionType) => {
-            console.log("at DesignerBox!", fromID, type, actionType);
-        });
+            this.RegisterAfterPageChangeHandler("DesignerBoxAfterPageChange", (fromID, type, actionType) => {
+                console.log("at DesignerBox!", fromID, type, actionType);
+            });
+        }
     },
 }
 </script>

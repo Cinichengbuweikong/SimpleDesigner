@@ -200,8 +200,6 @@ export default {
             else if (direction === "auto") {
                 // 根据 compIndex 和 sentryIndex 的位置来动态决定元素该插入到那里
 
-                // debugger;
-
                 const originalCompIndex = state.openedComponents.findIndex(
                     comp => comp.id === compID && comp.type === compType
                 );
@@ -260,7 +258,7 @@ export default {
             // 当前打开的侧边栏面板名  我们通过这个状态来指示侧边栏现在应打开哪个面板
             // 这里设置默认打开组件面板
 
-            currentPanel: "LayoutASideComponentPanel"
+            currentPanel: "componentPanel"
         }
     },
  

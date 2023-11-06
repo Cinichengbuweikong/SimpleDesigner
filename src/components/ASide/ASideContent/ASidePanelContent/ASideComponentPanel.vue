@@ -1,5 +1,5 @@
 <template>
-    <div class="layoutAsideComponentPanel">
+    <div class="layoutAsideComponentPanel" :style="cssVars">
         <p class="panelTitle">组件面板</p>
 
         <div
@@ -32,10 +32,14 @@
                         <i
                             class="iconfont icon-code_px_rounded-copy"
                             @click.stop="openComponent(comp.id, 'code')"
+                            v-if="allowShowComponentHoverOption"
                         >
                             <span>代码</span>
                         </i>
-                        <i class="iconfont icon-format_shapes_px_rounded">
+                        <i
+                            class="iconfont icon-format_shapes_px_rounded"
+                            v-if="allowShowComponentHoverOption"
+                        >
                             <span>设计</span>
                         </i>
                     </span>
@@ -73,10 +77,14 @@
                         <i
                             class="iconfont icon-code_px_rounded-copy"
                             @click.stop="openComponent(comp.id, 'code')"
+                            v-if="allowShowComponentHoverOption"
                         >
                             <span>代码</span>
                         </i>
-                        <i class="iconfont icon-format_shapes_px_rounded">
+                        <i
+                            class="iconfont icon-format_shapes_px_rounded"
+                            v-if="allowShowComponentHoverOption"
+                        >
                             <span>设计</span>
                         </i>
                     </span>
@@ -91,19 +99,23 @@ import { mapState } from 'vuex';
 
 
 export default {
-    name: "layoutAsideComponentPanelComponent",
+    name: "aSideComponentPanelComponent",
 
     methods: {
         openComponent(id, type) {
             // 打开某个组件的函数
             // id: String  要打开的组件的 id
             // type: "page" | "normal"  要新建的组件的类型
-            this.$store.commit("LayoutPageState/ADD_OPENED_COMPONENT", { id, type });
+            this.$store.commit(`${this.stateName}/ADD_OPENED_COMPONENT`, { id, type });
         },
 
         addComponent(event, componentType) {
             // 添加一个页面组件
             // componentType: "page" | "normal"  要新建的组件的类型
+
+            if (!this.allowAddComponent) {
+                return ;
+            }
 
             // 设置要新建的组件的类型
             this.$store.commit("AppState/SET_NEW_COMPONENT_TYPE", componentType);
@@ -125,6 +137,10 @@ export default {
             // event: Event  事件对象
             // id: String  被右键的组件的 id
             // type: "page" | "normal"  被右键的组件的类型
+
+            if (!this.allowShowRightClickMenu) {
+                return ;
+            }
 
             // 首先禁用掉浏览器的默认行为
             event.preventDefault();
@@ -150,6 +166,10 @@ export default {
         onComponentListItemDragStart(event, componentID) {
             // 当用户拖拽列表项时所执行的函数
 
+            if (!this.allowDrag) {
+                return ;
+            }
+
             const data = {
                 // 当前拖拽项的类型 这里表示被拖拽的是一个组件面板中的组件项
                 type: "ComponentPanelItem",
@@ -163,6 +183,11 @@ export default {
 
         onComponentListDragOver(event) {
             // 当用户把组件列表项拖拽到组件面板(页面或是普通)上时所执行的函数
+
+            if (!this.allowDrag) {
+                return ;
+            }
+
             const data = event.dataTransfer.getData("Text");
 
             try {
@@ -180,6 +205,10 @@ export default {
 
         onPageComponentsDrop(event) {
             // 当用户把组件列表项拖放在页面组件列表上时执行的函数
+
+            if (!this.allowDrag) {
+                return ;
+            }
 
             const data = event.dataTransfer.getData("Text");
 
@@ -208,6 +237,10 @@ export default {
         onNormalComponentsDrop(event) {
             // 当用户把组件列表项拖放在普通组件列表上时执行的函数
 
+            if (!this.allowDrag) {
+                return ;
+            }
+
             const data = event.dataTransfer.getData("Text");
 
             try {
@@ -233,13 +266,51 @@ export default {
         }
     },
 
-    computed: {
-        ...mapState("LayoutPageState", {}),
+    props: {
+        stateName: {
+            // 本组件需要使用哪个 state 下的侧边栏数据 ?
+            // 取值各个 state 命名空间的名字 例如 "LayoutPageState"
+            type: String,
+            required: true
+        },
 
+        allowAddComponent: {
+            // 是否允许新增组件
+            type: Boolean,
+            default: true
+        },
+
+        allowShowRightClickMenu: {
+            // 是否允许显示组件项右键的菜单
+            type: Boolean,
+            default: true
+        },
+
+        allowDrag: {
+            // 是否允许用户进行拖拽操作
+            type: Boolean,
+            default: true
+        },
+
+        allowShowComponentHoverOption: {
+            // 是否允许显示鼠标 hover 组件将时 组件项上的快捷操作按钮(例如代码和编辑)
+            type: Boolean,
+            default: true
+        }
+    },
+
+    computed: {
         ...mapState("AppState", {
+            // 显示所有组件用
             allPageComponents: state => state.components.pageComponents,
             allNormalComponents: state => state.components.normalComponents,
-        })
+        }),
+
+        cssVars() {
+            return {
+                "--addComponentCurorPointer": this.allowAddComponent ? "pointer" : "not-allowed",
+            };
+        }
     }
 }
 </script>
@@ -280,7 +351,7 @@ export default {
                 line-height: 20px;
                 font-size: 20px;
 
-                cursor: pointer;
+                cursor: var(--addComponentCurorPointer);
 
                 &:hover {
                     background-color: $barItemHoverBackgroundColor;
@@ -327,7 +398,6 @@ export default {
                     position: absolute;
                     top: 0;
                     right: 0;
-                    // transform: translateY(-50%);
 
                     background-color: $backgroundColor;
 
