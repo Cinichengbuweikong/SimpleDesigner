@@ -1,0 +1,93 @@
+// 这是一个项目示例文件 一个项目文件的结构应如此处的结构所示
+{
+    // 文件类型 应取值 "simpleDesignerProject"
+    // 没有此标记的 json 文件不认为是一个本应用的项目文件
+    "type": "simpleDesignerProject",
+
+    // 项目的设置
+    "settings": {
+        // 项目名
+        "name": "",
+
+        // 是否默认启用标尺
+        "enableRulerBar": true,
+
+        // 组件模板默认代码
+        "template": "",
+
+        // 组件默认宽度
+        "width": 0,
+
+        // 组件默认宽高比
+        "aspectRatio": "16/9",
+
+        // 组件默认 dpr 值
+        "dpr": 2,
+    },
+
+    // 存储本项目运行时的信息
+    "runtimeInfo": {
+        // 存储布局页的运行时信息
+        "layout": {
+            // 存储当前页面下所有打开的组件
+            "openedComponents": [
+                // id 是打开的组件的 id
+                // type 是打开的标签页的类型 取值 "design" | "code"
+                { "id": "...", "type": "" }
+            ],
+
+            // 保存当前激活的页的信息
+            // 取值 { id: String, type: "design" | "code" } | false
+            // 注: 在 vuex 中 此字段的默认值是 null 而不是 false
+            "currentTab": false
+        },
+
+        // 存储样式页的运行时信息
+        "style": {},
+        
+        // 存储动画页的运行时信息
+        "animation": {},
+    },
+
+    // 存储组件的信息
+    "components": {
+        // 存储页面组件
+        "pageComponents": {
+            // 组件 id
+            "componentsID": {
+                // 元信息 包含组件的名字 组件的 id  组件的类型之类的东西
+                "metaData": {
+                    // 组件 id
+                    "id": "...",
+
+                    // 组件名
+                    "name": "...",
+
+                    // 当前组件类型
+                    "type": "page", 
+
+                    // 当前组件宽度
+                    "width": 0,
+
+                    // 当前组件宽高比
+                    "aspectRatio": "16/9",
+
+                    // 当前组件 dpr 值
+                    "dpr": 2,
+                },
+                // 组件的内容
+                "content": {
+                    // 模板的 ast
+                    "template": {},
+                    // js 代码的 ast 
+                    "script": {},
+                    // 样式的 ast
+                    "style": {}
+                }
+            }
+        },
+        // 存储普通组件
+        "normalComponents": {
+        }
+    }
+}

@@ -1,58 +1,43 @@
 <template>
     <div class="designerView">  <!-- 设计视口盒子 -->
         <div class="designer" :style="cssVars">
-            <iframe src="" frameborder="0" @click="f"></iframe>
+            <iframe src="" frameborder="0"></iframe>
             <canvas style="width: 100%; height: 100%; position: absolute; pointer-events: none;"></canvas>
         </div>
     </div>
 </template>
 
 <script>
+import getCurrentActiveComponentObject from '../../../utils/getCurrentActiveComponentObject.js';
+
+
 export default {
     name: "designerComponent",
 
     props: {
-        DesignerPointEvents: {
-            // 设置当前组件内的 iframe 是否响应 pointer-events
-            type: Boolean,
+        stateName: {
+            // 本组件需要使用哪个 state 下的信息?
+            type: String,
             required: true
-        },
-
-        CurrentComponentData: {
-            // 获取当前被激活的组件的数据
-            // 本组件需要显示这个对象中包含的组件数据
-            type: Object,
-            required: true,
-        },
-
-        CurrentComponentExtraData: {
-            // 获取当前被激活的组件的额外数据
-            // 本组件需要根据这个对象中包含的额外数据来调整本组件内的界面的信息
-            type: Object,
-            required: true,
-        },
-    },
-
-    methods: {
-        f() {
-            console.log("iframe focus");
         }
     },
 
     computed: {
+        currentComponentExtraData() {
+            // 获取当前被激活组件的额外信息数据
+            return getCurrentActiveComponentObject(this.stateName);
+        },
+
         cssVars() {
             return {
-                "--iframePointerEvents":
-                    this.DesignerPointEvents === false ? "none" : "auto",
-                
                 "--designerWidth":
-                    this.CurrentComponentExtraData.width >= 0
-                    ? `${this.CurrentComponentExtraData.width}px`
+                    this.currentComponentExtraData.width >= 0
+                    ? `${this.currentComponentExtraData.width}px`
                     : "0px",
                 
                 "--aspectRatio": 
-                    this.CurrentComponentExtraData.aspectRatio
-                    ? this.CurrentComponentExtraData.aspectRatio
+                    this.currentComponentExtraData.aspectRatio
+                    ? this.currentComponentExtraData.aspectRatio
                     : "16/9"
             };
         }
@@ -89,7 +74,7 @@ export default {
 
             position: absolute;
 
-            pointer-events: var(--iframePointerEvents);
+            pointer-events: auto;
         }
     }
 }

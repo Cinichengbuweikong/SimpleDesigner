@@ -128,7 +128,8 @@ export default {
                 show: true,
                 dialogCompName: "NewComponentDialog",
                 left: clientX,
-                top: clientY
+                top: clientY,
+                targetStateName: this.stateName
             });
         },
 
@@ -159,7 +160,8 @@ export default {
                 show: true,
                 dialogCompName: "ComponentMenuDialog",
                 left: clientX,
-                top: clientY
+                top: clientY,
+                targetStateName: this.stateName
             });
         },
 

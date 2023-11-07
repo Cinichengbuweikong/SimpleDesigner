@@ -10,7 +10,7 @@
                 </div>
 
                 <div class="cmdNotationItem">
-                    焦点位置: {{ focusPosition ? focusPosition : "None" }}
+                    缩放: {{ scale ? scale : "None" }}
                 </div>
 
                 <div class="cmdNotationItem">
@@ -37,7 +37,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"; 
+import { mapGetters } from "vuex";
+import getCurrentActiveComponentObject from "../../utils/getCurrentActiveComponentObject.js";
 import CmdPanel from './CmdPanel.vue';
 
 export default {
@@ -47,9 +48,6 @@ export default {
         return {
             // 保存用户输入的指令
             cmd: "",
-
-            // 保存当前用户正在操作的组件
-            currentComponent: "",
         };
     },
 
@@ -60,10 +58,27 @@ export default {
         },
     },
 
+    props: {
+        stateName: {
+            // 本组件需要使用哪个 state 中的数据?
+            type: String,
+            required: true
+        }
+    },
+
     computed: {
-        ...mapGetters({
-            currentActiveComponentExtraData: "LayoutPageState/getCurrentActiveComponentExtraData",
-        }),
+        currentActiveComponentObject() {
+            // 获取当前 state 中被激活的组件的组件对象
+            return getCurrentActiveComponentObject(this.stateName);
+        },
+
+        currentComponentExtraData() {
+            const vuexGetters = mapGetters({
+                currentComponentExtraData: `${this.stateName}/getCurrentActiveComponentExtraData`
+            });
+
+            return vuexGetters.currentComponentExtraData.call(this);
+        },
 
         cssVars() {
             return {
@@ -72,66 +87,41 @@ export default {
         },
 
         workingComponentID() {
-            // 获取当前用户正在操作的组件的 id
-            if (this.currentActiveComponentExtraData === null) {
+            // 获取当前用户正操作的组件的 id
+            // 该属性存储在 currentComponentExtraData 中
+
+            if (this.currentActiveComponentObject === null) {
                 return null;
             }
 
-            return this.currentActiveComponentExtraData.workingComponentID;
+            return this.currentComponentExtraData.workingComponentID;
         },
 
-        focusPosition() {
-            // 获取当前用户的焦点位置 取值 "designPage" | "designPort"  
-            // designPage 表示焦点位置在设计页 此时用户可以对 designer 组件的大小进行缩放
-            // designPort 表示焦点位置在设计视口中 我们认为 designerPort 即为 designer 组件
-            // 当焦点处在 designPort 中时 用户可以对 designer 组件中的 iframe 中的内容进行操作
+        scale() {
+            // 获取当前被激活的组件的缩放值
+            // 该属性存储在 currentComponentExtraData 中
 
-            if (this.currentActiveComponentExtraData === null) {
+            if (this.currentActiveComponentObject === null) {
                 return null;
             }
 
-            if (this.currentActiveComponentExtraData.focusPosition === "designPage") {
-                return "设计页";
-            } else if (this.currentActiveComponentExtraData.focusPosition === "designPort") {
-                return "设计视口";
-            } else {
-                console.log("未知的焦点位置: ", this.currentActiveComponentExtraData.focusPosition);
-
-                return "";
-            }
-        },
-
-        aspectRatio() {
-            // 获取当前被激活的组件的横纵比
-
-            if (this.currentActiveComponentExtraData === null) {
-                return null;
-            }
-
-            let [x, y] = this.currentActiveComponentExtraData.aspectRatio.split("/");
-            x = Number(x);
-            y = Number(y);
-
-            return {
-                x,
-                y
-            };
+            return this.currentComponentExtraData.scale;
         },
 
         width() {
             // 获取当前被激活的组件的宽
 
-            if (this.currentActiveComponentExtraData === null) {
+            if (this.currentActiveComponentObject === null) {
                 return null;
             }
 
-            return this.currentActiveComponentExtraData.width;
+            return this.currentActiveComponentObject.width;
         },
 
         height() {
             // 通过宽和横纵比来确定元素的高
 
-            if (this.currentActiveComponentExtraData === null) {
+            if (this.currentActiveComponentObject === null) {
                 return null;
             }
 
@@ -141,16 +131,31 @@ export default {
             return (width / x) * y;
         },
 
-        dpr() {
-            // 获取当前页面的 dpr 值
-            // 例如 当 dpr 值为 2 时 即表示 1920x1080 大小的窗口实际以 960x540 的大小进行显示
-            // 此时我们的设计视口的大小就应该是 960x540 的
+        aspectRatio() {
+            // 获取当前被激活的组件的横纵比
 
-            if (this.currentActiveComponentExtraData === null) {
+            if (this.currentActiveComponentObject === null) {
                 return null;
             }
 
-            return this.currentActiveComponentExtraData.dpr;
+            let [x, y] = this.currentActiveComponentObject.aspectRatio.split("/");
+            x = Number(x);
+            y = Number(y);
+
+            return {
+                x,
+                y
+            };
+        },
+
+        dpr() {
+            // 获取当前页面的 dpr 值
+
+            if (this.currentActiveComponentObject === null) {
+                return null;
+            }
+
+            return this.currentActiveComponentObject.dpr;
         }
     },
 

@@ -90,7 +90,10 @@
                         <p>仅导出当前预览的组件</p>
                     </div>
 
-                    <div class="box">
+                    <div
+                        class="box"
+                        @click="saveProject"
+                    >
                         <div>
                             <i class="iconfont icon-save_px_rounded"></i>
                         </div>
@@ -121,6 +124,13 @@ import Designer from '../components/ViewBox/DesignerBox/Designer.vue';
 
 export default {
     name: "ExportPage",
+
+    methods: {
+        saveProject() {
+            const proj = this.$store.getters["AppState/projectObject"];
+            console.log(proj);
+        }
+    },
 
     components: {
         ASide,

@@ -5,7 +5,8 @@
 import { nanoid } from "nanoid";
 
 import newComponentData from "../../utils/newComponentData.js";
-import newProject from "../..//utils/newProject.js";
+import newProject from "../../utils/newProject.js";
+import saveProject from "../../utils/saveProject.js";
 
 
 export default {
@@ -84,7 +85,6 @@ export default {
                 };
             }
             
-            
             // 而后打开新建的组件
             this.commit("LayoutPageState/ADD_OPENED_COMPONENT", {
                 id: newComponentID,
@@ -113,17 +113,29 @@ export default {
 
         MODIFY_COMPONENT_DATA(state, { componentID, newComponentData }) {
             // 修改组件对象中所 存储的数据
+            // componentID: String  需要被修改数据的组件 id
+            // newComponentData: Object  包含要修改为的新数据的对象
+            //   其中 key 应和原本组件对象中的 key 对应  val 是该 key 的新值
 
             if (state.components.pageComponents[componentID]) {
+                const newData = { ...state.components.pageComponents[componentID] };
+
                 for (let key in newComponentData) {
-                    state.components.pageComponents[componentID][key] = newComponentData[key];
+                    newData[key] = newComponentData[key];
                 }
+
+                state.components.pageComponents[componentID] = newData;
             }
             else if (state.components.normalComponents[componentID]) {
+                const newData = { ...state.components.pageComponents[componentID] };
+
                 for (let key in newComponentData) {
-                    state.components.normalComponents[componentID][key] = newComponentData[key];
+                    newData[key] = newComponentData[key];
                 }
-            } else {
+
+                state.components.normalComponents[componentID] = newData;
+            }
+            else {
                 // 很奇怪 给定的组件 id 不在 pageComponents 和 normalComponents 中
                 // 那就 console.log() 一下 id 就行了
                 console.log("未知的组件 id : ", componentID);
@@ -180,6 +192,7 @@ export default {
             //   top: Number  对话框距屏幕左上角的纵轴距离  px
             //   padding: Number  对话框的内边距  px 计
             //   maskBackgroundColor: String  覆盖层的背景色 默认透明
+            //   targetStateName: String  需要在哪个 state 上进行操作  这个参数并不是必须的 只有我们需要修改某个特定 state 下独有的数据时我们才需指定这个参数
 
             const newDialogState = {
                 ...state.dialog.dialogData
@@ -243,22 +256,13 @@ export default {
                 return ;
             }
 
-            state.dialog.ComponentMenuDialogData.targetCompnentID = componentID;
-            state.dialog.ComponentMenuDialogData.targetComponentType = componentType;
-        },
-
-        SET_COMPONENT_MENU_DIALOG_DATA(state, { componentID, componentType }) {
-            // 设置在 "组件面板" 的组件项上右键时显示的组件菜单对话框所需的数据
-            // componentID: String  被右键的组件的 id
-            // componentType: "page" | "normal"  被右键的组件的类型
-
-            if (componentType !== "page" && componentType !== "normal") {
-                // 未知类型 不需要进行下一步了
-                return ;
+            if (componentID) {
+                state.dialog.ComponentMenuDialogData.targetCompnentID = componentID;
             }
 
-            state.dialog.ComponentMenuDialogData.targetCompnentID = componentID;
-            state.dialog.ComponentMenuDialogData.targetComponentType = componentType;
+            if (componentType) {
+                state.dialog.ComponentMenuDialogData.targetComponentType = componentType;
+            }
         },
 
         SET_COMPONENT_RENAME_DIALOG_DATA(state, { componentID }) {
@@ -328,6 +332,9 @@ export default {
 
                 // 覆盖层的背景色 默认透明
                 maskBackgroundColor: "transparent",
+
+                // 需要在哪个 State 上进行操作?
+                targetStateName: "",
             },
 
             NewComponentDialogData: {
@@ -371,5 +378,10 @@ export default {
     },
  
     getters: {
+        projectObject() {
+            // 调用本函数 本函数将返回一个项目对象 这个项目对象可以直接被序列化
+            // 而后我们可以把序列化后的结果当作项目文件返回给用户使用
+            return saveProject();
+        }
     }
 };

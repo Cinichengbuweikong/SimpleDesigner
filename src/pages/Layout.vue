@@ -62,12 +62,10 @@
                     :designerRef="$refs.designerRef"
                     stateName="LayoutPageState"
                 >
-                    <template v-slot:designerSlot="scopeData">
+                    <template v-slot:designerSlot>
                         <Designer
                             ref="designerRef"
-                            :DesignerPointEvents="scopeData.DesignerPointEvents"
-                            :CurrentComponentData="scopeData.CurrentComponentData"
-                            :CurrentComponentExtraData="scopeData.CurrentComponentExtraData"
+                            stateName="LayoutPageState"
                         />
                     </template>
 
@@ -79,7 +77,9 @@
                     </template>
                     
                     <template v-slot:cmdBoxSlot>
-                        <CmdBox />
+                        <CmdBox
+                            stateName="LayoutPageState"
+                        />
                     </template>
                 </DesignerBox>
             </template>

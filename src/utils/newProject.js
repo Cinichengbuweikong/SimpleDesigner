@@ -24,6 +24,12 @@ export default function(projectName) {
     }
 </style>
 `,  // 组件模板的默认代码
+            
+            width: 960,  // 组件默认宽度
+
+            aspectRatio: "16/9",  // 组件默认宽高比
+
+            dpr: 2,  // 组件默认 dpr 值
         }
     };
 }

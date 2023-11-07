@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import { mapState } from "vuex";
 
 
 export default {
@@ -30,13 +30,13 @@ export default {
                 this.allOpenedComponents.findIndex(comp => comp.id === this.mustDeleteComponentID) !== -1
             ) {
                 // 关闭设计页面
-                this.$store.commit("LayoutPageState/REMOVE_OPENED_COMPONENTS", {
+                this.$store.commit(`${this.stateName}/REMOVE_OPENED_COMPONENTS`, {
                     id: this.mustDeleteComponentID,
                     type: "design"
                 });
 
                 // 关闭代码页面
-                this.$store.commit("LayoutPageState/REMOVE_OPENED_COMPONENTS", {
+                this.$store.commit(`${this.stateName}/REMOVE_OPENED_COMPONENTS`, {
                     id: this.mustDeleteComponentID,
                     type: "code"
                 });
@@ -60,13 +60,19 @@ export default {
     },
 
     computed: {
-        ...mapState("LayoutPageState", {
-            allOpenedComponents: state => state.openedComponents,
-        }),
-
         ...mapState("AppState", {
             mustDeleteComponentID: state => state.dialog.DeleteComponentDialogData.deleteComponentID,
+            stateName: state => state.dialog.dialogData.targetStateName,
         }),
+
+        allOpenedComponents() {
+            // 获取指定 state 下所有被打开的组件(标签)列表
+            const vuexState = mapState(this.stateName, {
+                allOpenedComponents: state => state.openedComponents,
+            });
+
+            return vuexState.allOpenedComponents.call(this);
+        },
 
         currentMustDeleteComponentName() {
             // 获取当前需要被删除的组件的名字
@@ -83,7 +89,7 @@ export default {
                 return allNormalComponents[id].name;
             }
 
-            console.log("not found this id's name: ", id);
+            console.log("没有找到此 id 对应的组件名: ", id);
             return "";
         }
     },
