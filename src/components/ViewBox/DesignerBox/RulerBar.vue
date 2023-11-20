@@ -15,7 +15,7 @@
                 <span></span>
                 
                 <span :id="`X${i}`">
-                    <span id="tag">{{100 * i}}{{ i === xUnitCount ? "px" : "" }}</span>
+                    <span id="tag">{{((100 * i) / scale).toFixed(2)}}{{ i === xUnitCount ? "px" : "" }}</span>
                 </span>
             </span>
         </div>
@@ -32,7 +32,7 @@
                 <span></span>
                 
                 <span :id="`Y${i}`">
-                    <span id="tag">{{100 * i}}{{ i === yUnitCount ? "px" : "" }}</span>
+                    <span id="tag">{{((100 * i) / scale).toFixed(2)}}{{ i === yUnitCount ? "px" : "" }}</span>
                 </span>
             </span>
         </div>
@@ -40,10 +40,16 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
     name: "rulerBarComponent",
 
     data() {
+        const vuexGetters = mapGetters({
+            currentComponentExtraData: `${this.stateName}/getCurrentActiveComponentExtraData`
+        });
+
         return {
             // X 轴上应有几个大刻度
             xUnitCount: 10,
@@ -51,6 +57,8 @@ export default {
             yUnitCount: 10,
 
             scrollBarWidth: 17,
+
+            vuexGetters
         };
     },
 
@@ -58,6 +66,11 @@ export default {
         ScrollBarWidth: {
             type: Number,
             default: 17
+        },
+
+        stateName: {
+            type: String,
+            required: true
         }
     },
 
@@ -80,6 +93,10 @@ export default {
             return {
                 "--scrollBarWidth": `${this.ScrollBarWidth}px`,
             };
+        },
+
+        scale() {
+            return this.vuexGetters.currentComponentExtraData.call(this).scale.toFixed(2);
         }
     },
 

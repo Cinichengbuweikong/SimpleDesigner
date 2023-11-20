@@ -42,7 +42,16 @@ export default {
     name: "ViewBoxComponent",
 
     data() {
+        const vuexState = mapState(this.stateName, {
+            currentTab: state => {
+                // 获取存储在 LayoutPageState 中的当前激活的组件的信息
+                return state.tabBar.currentTab;
+            },
+        });
+
         return {
+            vuexState,
+
             // 存储激活的标签变化之前所调用的函数
             beforePageChangeHandlers: {},
             // 存储 激活的标签变化之后所调用的函数
@@ -50,6 +59,15 @@ export default {
             // 上述两个属性中 key 值为回调的键  val 为回调函数
             // 方法通过回调的键来判断两个回调是否相同
         };
+    },
+
+    props: {
+        stateName: {
+            // 本组件需要使用哪个 state 下的数据 ?
+            // 取值各个 state 命名空间的名字 例如 "LayoutPageState"
+            type: String,
+            required: true
+        },
     },
 
     methods: {
@@ -129,12 +147,9 @@ export default {
     },
 
     computed: {
-        ...mapState("LayoutPageState", {
-            currentTab: state => {
-                // 获取存储在 LayoutPageState 中的当前激活的组件的信息
-                return state.tabBar.currentTab;
-            },
-        })
+        currentTab() {
+            return this.vuexState.currentTab.call(this);
+        }
     }
 }
 </script>

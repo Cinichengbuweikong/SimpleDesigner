@@ -19,6 +19,7 @@ import DeleteComponentDialog from './DialogContent/DeleteComponentDialog.vue';
 import HasOpenedProjectDialog from './DialogContent/HasOpenedProjectDialog.vue';
 import NewComponentDialog from './DialogContent/NewComponentDialog.vue';
 import NewProjectDialog from './DialogContent/NewProjectDialog.vue';
+import OpenProjectFailureDialog from './DialogContent/OpenProjectFailureDialog.vue';
 import RenameComponentDialog from './DialogContent/RenameComponentDialog.vue';
 import SetDefaultComponentCodeDialog from './DialogContent/SetDefaultComponentCodeDialog.vue';
 
@@ -69,7 +70,8 @@ export default {
         NewProjectDialog,
         CloseProjectDialog,
         HasOpenedProjectDialog,
-        SetDefaultComponentCodeDialog
+        SetDefaultComponentCodeDialog,
+        OpenProjectFailureDialog
     },
 }
 </script>

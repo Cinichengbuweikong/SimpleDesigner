@@ -10,7 +10,7 @@
                 </div>
 
                 <div class="cmdNotationItem">
-                    缩放: {{ scale ? scale : "None" }}
+                    缩放: {{ scale ? scale.toFixed(2) : "None" }}
                 </div>
 
                 <div class="cmdNotationItem">

@@ -83,10 +83,12 @@ export default {
             state.openedComponents = openedComponents;
         },
 
-        SET_CURRENT_COMPONENT_EXTRA_DATA(state, { key, value }) {
-            // 用于设置当前活动的组件页面额外信息对象中的数据
-            // key: String  要设置的额外信息的 key
-            // val: any  要设置为的值
+        /**
+         * 用于设置当前活动的组件页面额外信息对象中的数据
+         * @param {Object} state  vuex 的状态对象
+         * @param {Object} newStateObject  包含了一些组件新额外信息的对象
+         */
+        SET_CURRENT_COMPONENT_EXTRA_DATA(state, newStateObject) {
 
             const currentComponentID = state.tabBar.currentTab.id;
             
@@ -97,7 +99,9 @@ export default {
                 ...state.openedComponents[currentComponentExtraDataIndex]
             };
 
-            newCurrentComponentExtraData[key] = value;
+            for (let key in newStateObject) {
+                newCurrentComponentExtraData[key] = newStateObject[key];
+            }
 
             const newOpenedComponents = [ ...state.openedComponents ];
 

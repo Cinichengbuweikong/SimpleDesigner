@@ -81,15 +81,53 @@ export default function() {
     // 存储布局页面中的运行时信息
     const layoutOpenedComponents = LayoutPageState.state.openedComponents.map(c => ({
         id: c.id,
-        type: c.type
+        type: c.type,
+        scale: c.scale,
+        enableRulerBar: c.enableRulerBar,
+        lockState: c.lockState
     })); 
 
     let layoutCurrentTab = LayoutPageState.state.tabBar.currentTab;
-    layoutCurrentTab = layoutCurrentTab ? { id: layoutCurrentTab.id, type: layoutCurrentTab.type } : false;
+    layoutCurrentTab = layoutCurrentTab ? { 
+        id: layoutCurrentTab.id,
+        type: layoutCurrentTab.type,
+    } : false;
 
     project.runtimeInfo.layout.openedComponents = layoutOpenedComponents;
     project.runtimeInfo.layout.currentTab = layoutCurrentTab;
 
 
-    return project;
+    // 存储组件信息:
+    const toSaveableCompObject = (stateComponentObject) => 
+        Object.values(stateComponentObject).map(c => {
+            const { id, name, type, width, aspectRatio, dpr, ast } = c;
+
+            return {
+                metaData: {
+                    id,
+                    name,
+                    type,
+                    width,
+                    aspectRatio,
+                    dpr
+                },
+
+                content: {
+                    ...ast
+                }
+            };
+        }).reduce((prev, item) => {
+            prev[item.metaData.id] = item;
+            return prev;
+        }, {});
+
+
+    const pageComponents = toSaveableCompObject(AppState.state.components.pageComponents);
+    const normalComponents = toSaveableCompObject(AppState.state.components.normalComponents);
+
+    project.components.pageComponents = pageComponents;
+    project.components.normalComponents = normalComponents;
+
+
+    return JSON.stringify(project);
 }

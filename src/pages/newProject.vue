@@ -16,7 +16,7 @@
                 新建项目
             </div>
 
-            <div class="box" for="openProjectInput" @click="openProject">
+            <div class="box" @click="openProject" ref="openProjectBoxRef">
                 <div>
                     <i class="iconfont icon-folder_px_rounded"></i>
                 </div>
@@ -37,12 +37,14 @@
             </div>
         </article>
 
-        <input type="file" ref="openProjectInput" accept=".json" id="openProjectInput" style="display:none" />
+        <input type="file" ref="openProjectInput" accept=".json" @change="parseProjectFile" style="display:none" />
     </section>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import importProject from "../utils/importProject.js";
+
 
 export default {
     name: "newProjectPage",
@@ -84,6 +86,9 @@ export default {
             const { clientX, clientY } = event;
             
             const openFilePicker = () => {
+                // 下一步的回调
+
+                // 让用户选择文件
                 this.$refs.openProjectInput.click();
 
                 // 关闭对话框
@@ -93,6 +98,8 @@ export default {
             };
 
             if (this.hasOpenedProject) {
+                // 用户当前已经打开一个项目了 我们需要显示对话框确认用户确实想进行下一步
+
                 // 设置用户确实要进行下一步的话的回调
                 this.$store.commit("AppState/SET_HAS_OPENED_PROJECT_DIALOG_DATA", {
                     nextAction: openFilePicker
@@ -108,6 +115,7 @@ export default {
                 return ;
             }
 
+            // 如果当前用户没有打开过项目的话 那就直接执行打开项目的代码即可
             openFilePicker();
         },
 
@@ -122,6 +130,49 @@ export default {
                 top: clientY
             });
         },
+
+        parseProjectFile(event) {
+            // 当用户选择了一个文件后 该回调函数将执行 我们需要在这里读取用户选择的文件
+
+            // undefined
+            const {x, y} = this.$refs.openProjectBoxRef.getBoundingClientRect();
+
+            const file = event.target.files[0];
+
+            const fileReader = new FileReader()
+            fileReader.readAsText(file);
+
+            fileReader.onloadend = () => {
+                try {
+                    // 解析项目文件
+                    const projectObject = importProject(fileReader.result);
+                    
+                    this.$store.commit("AppState/IMPORT_PROJECT", projectObject);
+                } catch(e) {
+                    // 提示用户项目文件解析出错
+                    this.$store.commit("AppState/SET_DIALOG_STATE", {
+                        show: true,
+                        dialogCompName: "OpenProjectFailureDialog",
+                        left: x,
+                        top: y
+                    });
+                    
+                    console.log("打开项目出错: ", e);
+                }
+            }
+
+            fileReader.onerror = () => {
+                // 提示用户项目文件解析出错
+                this.$store.commit("AppState/SET_DIALOG_STATE", {
+                    show: true,
+                    dialogCompName: "OpenProjectFailureDialog",
+                    left: x,
+                    top: y
+                });
+
+                console.log("读取出现了错误 错误信息: ", fileReader.error);
+            }
+        }
     },
 
     computed: {
@@ -183,7 +234,7 @@ export default {
         display: flex;
         flex-direction: row;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
 
         .box {
             width: 80px;

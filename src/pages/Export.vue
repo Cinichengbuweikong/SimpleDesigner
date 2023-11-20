@@ -4,7 +4,7 @@
             <template v-slot:toolBar>
                 <!-- 需要改 state -->
                 <ASideBar
-                    stateName="LayoutPageState"
+                    stateName="ExportPageState"
                 >
                     <template v-slot:ASideBarItemSlot="scopeData">
                         <ASideBarItem
@@ -20,12 +20,12 @@
             <template v-slot:toolPanel>
                 <!-- 需要改 state -->
                 <ASidePanel
-                    stateName="LayoutPageState"
+                    stateName="ExportPageState"
                 >
                     <template v-slot:componentPanelSlot>
                         <!-- 需要改 state -->
                         <ASideComponentPanel
-                            stateName="LayoutPageState"
+                            stateName="ExportPageState"
                             :allowAddComponent="false"
                             :allowShowRightClickMenu="false"
                             :allowDrag="false"
@@ -37,11 +37,13 @@
         </ASide>
 
         <article>
-            <ViewBox>
+            <ViewBox
+                stateName="ExportPageState"
+            >
                 <template v-slot:tabBarSlot="scopeData">
                     <!-- 需要修改 state -->
                     <TabBar
-                        stateName="LayoutPageState"
+                        stateName="ExportPageState"
                         :BeforePageChange="scopeData.BeforePageChange"
                         :AfterPageChange="scopeData.AfterPageChange"
                     />
@@ -54,14 +56,16 @@
                         :RegisterBeforePageChangeHandler="scopeData.RegisterBeforePageChangeHandler"
                         :RegisterAfterPageChangeHandler="scopeData.RegisterAfterPageChangeHandler"
                         :designerRef="$refs.designerRef"
-                        stateName="LayoutPageState"
+                        stateName="ExportPageState"
                     >
                         <template v-slot:designerSlot="scopeData">
+                            <!-- 需要修改 state -->
                             <Designer
                                 ref="designerRef"
                                 :DesignerPointEvents="scopeData.DesignerPointEvents"
                                 :CurrentComponentData="scopeData.CurrentComponentData"
                                 :CurrentComponentExtraData="scopeData.CurrentComponentExtraData"
+                                stateName="ExportPageState"
                             />
                         </template>
                     </DesignerBox>
@@ -98,6 +102,8 @@
                             <i class="iconfont icon-save_px_rounded"></i>
                         </div>
 
+                        <a ref="saveProjectAnchor" style="display: none;"></a>
+
                         <p>保存项目</p>
                     </div>
                 </div>
@@ -125,10 +131,34 @@ import Designer from '../components/ViewBox/DesignerBox/Designer.vue';
 export default {
     name: "ExportPage",
 
+    data() {
+        return {
+            projectJsonUrl: null,
+        };
+    },
+
     methods: {
         saveProject() {
-            const proj = this.$store.getters["AppState/projectObject"];
-            console.log(proj);
+            if (this.projectJsonUrl !== null) {
+                URL.revokeObjectURL(this.projectJsonUrl);
+            }
+
+            const projectName = this.$store.state.AppState.projectInfo.projectName;
+
+            // 获取到整个项目的 json 文件
+            const projectJson = this.$store.getters["AppState/projectObject"];
+            const dataBlob = new Blob([projectJson], {
+                type: "application/json"
+            });
+
+            const url = URL.createObjectURL(dataBlob);
+
+            const saveProjectAnchor = this.$refs.saveProjectAnchor;
+            saveProjectAnchor.download = `${projectName}-simpleDesignerProject.json`;
+            saveProjectAnchor.href = url;
+            saveProjectAnchor.click();
+
+            this.projectJsonUrl = url;
         }
     },
 
@@ -222,6 +252,10 @@ export default {
 
                             font-size: 30px;
                         }
+                    }
+
+                    p {
+                        text-align: center;
                     }
                 }
             }

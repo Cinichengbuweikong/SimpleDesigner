@@ -2,6 +2,7 @@ import AppState from "../store/AppState/AppState.js";
 import LayoutPageState from "../store/AppState/LayoutPageState.js";
 import StylePageState from "../store/AppState/StylePageState.js";
 import AnimationPageState from "../store/AppState/AnimationPageState.js";
+import ExportPageState from "../store/AppState/ExportPageState.js";
 
 
 export default function(stateName) {
@@ -29,6 +30,13 @@ export default function(stateName) {
         }
 
         id = AnimationPageState.state.tabBar.currentTab.id;
+    }
+    else if (stateName == "ExportPageState") {
+        if (ExportPageState.state.tabBar.currentTab === null) {
+            return null;
+        }
+
+        id = ExportPageState.state.tabBar.currentTab.id;
     }
     else {
         // 不允许的 stateName  我们什么都不做即可

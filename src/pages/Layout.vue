@@ -45,7 +45,9 @@
     </ASide>
 
     <article>
-        <ViewBox>
+        <ViewBox
+            stateName="LayoutPageState"
+        >
             <template v-slot:tabBarSlot="scopeData">
                 <TabBar
                     stateName="LayoutPageState"
@@ -73,6 +75,7 @@
                         <RulerBar
                             v-if="scopeData.show"
                             :ScrollBarWidth="scopeData.ScrollBarWidth"
+                            stateName="LayoutPageState"
                         />
                     </template>
                     

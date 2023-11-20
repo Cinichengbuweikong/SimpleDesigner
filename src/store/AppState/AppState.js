@@ -25,9 +25,20 @@ export default {
             state.projectInfo = newProjectObject;
         },
 
-        IMPORT_PROJECT(state) {},
+        IMPORT_PROJECT(state, projectObject) {
+            // 根据 projectObject 中的信息导入项目
+            const { projectInfo, components, runtimeInfo } = projectObject;
 
-        SAVE_PROJECT(state) {},
+            this.state.AppState.projectInfo = projectInfo;
+
+            this.state.AppState.components.pageComponents = components.pageComponents;
+            this.state.AppState.components.normalComponents = components.normalComponents;
+
+            this.state.LayoutPageState.openedComponents = runtimeInfo.layout.openedComponents;
+            this.state.LayoutPageState.tabBar.currentTab = runtimeInfo.layout.currentTab;
+
+            // ...
+        },
 
         CLOSE_PROJECT(state) {
             // 关闭项目

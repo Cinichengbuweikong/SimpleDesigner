@@ -16,11 +16,17 @@
 
 <script>
 import { mapState } from 'vuex';
+
 export default {
     name: "TabBarItemComponent",
 
     data() {
+        const vuexState = mapState(this.stateName, {
+            currentTab: state => state.tabBar.currentTab,
+        });
+
         return {
+            vuexState
         }
     },
 
@@ -60,6 +66,13 @@ export default {
             type: Function,
             default: (fromID, type, actionType) => {}
         },
+
+        stateName: {
+            // 本组件需要使用哪个 state 下的标签栏数据 ?
+            // 取值各个 state 命名空间的名字 例如 "LayoutPageState"
+            type: String,
+            required: true
+        }
     },
 
     methods: {
@@ -68,7 +81,7 @@ export default {
             this.BeforePageChange(this.currentActiveTabID, this.currentActiveTabType, "change");
 
             this.$store.commit(
-                "LayoutPageState/SET_CURRENT_TAB",
+                `${this.stateName}/SET_CURRENT_TAB`,
                 { id: this.itemid, type: this.itemType }
             );
 
@@ -81,7 +94,7 @@ export default {
             this.BeforePageChange(this.currentActiveTabID, this.currentActiveTabType, "delete");
 
             this.$store.commit(
-                "LayoutPageState/REMOVE_OPENED_COMPONENTS",
+                `${this.stateName}/REMOVE_OPENED_COMPONENTS`,
                 { id: this.itemid, type: this.itemType }
             );
 
@@ -127,7 +140,7 @@ export default {
             // 放到本标签所表示的额外信息对象的前面
             const data = JSON.parse(event.dataTransfer.getData("Text"));
 
-            this.$store.commit("LayoutPageState/SET_OPENED_COMPONENT_ORDER", {
+            this.$store.commit(`${this.stateName}/SET_OPENED_COMPONENT_ORDER`, {
                 sentryID: this.itemid,
                 sentryType: this.itemType,
                 compID: data.id,
@@ -138,9 +151,9 @@ export default {
     },
 
     computed: {
-        ...mapState("LayoutPageState", {
-            currentTab: state => state.tabBar.currentTab,
-        }),
+        currentTab() {
+            return this.vuexState.currentTab.call(this);
+        },
 
         currentActiveTabID() {
             // 获取当前被激活的 tab 项所代表的组件的 id

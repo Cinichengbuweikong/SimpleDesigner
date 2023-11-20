@@ -9,6 +9,7 @@
       v-for="comp in openedComponents"
       :key="`${comp.id}_${comp.type}`"
 
+      :stateName="stateName"
       :itemid="comp.id"
       :itemName="getComponentName(comp.id)"
       :itemType="comp.type"

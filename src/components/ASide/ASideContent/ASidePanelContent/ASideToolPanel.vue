@@ -79,8 +79,7 @@ export default {
                 this.$store.commit(
                     `${this.stateName}/SET_CURRENT_COMPONENT_EXTRA_DATA`, 
                     {
-                        key: "enableRulerBar",
-                        value
+                        enableRulerBar: value
                     }
                 );
             }
