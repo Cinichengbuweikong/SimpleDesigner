@@ -122,6 +122,40 @@ export default {
             }
         },
 
+        /**
+         * 通过给定的组件类型和组件名来删除一个组件
+         * @param {Object} state Vuex state 对象 
+         * @param {{componentType: "page" | "normal", componentName: string}} param1 componentType 是组件的类型  componentName 是组件名
+         * @returns {null}
+         */
+        DELETE_COMPONENT_BY_NAME(state, { componentType, componentName }) {
+            let targetComponentID;
+
+            if (componentType === "page") {
+                Object.values(state.components.pageComponents).map(comp => {
+                    if (comp.name === componentName) {
+                        targetComponentID = comp.id;   
+                    }
+                });
+
+                let newPageComponents = { ...state.components.pageComponents };
+                delete newPageComponents[targetComponentID];
+                state.components.pageComponents = newPageComponents;
+            } else {
+                // componentType === "normal"
+
+                Object.values(state.components.normalComponents).map(comp => {
+                    if (comp.name === componentName) {
+                        targetComponentID = comp.id;
+                    }
+                });
+
+                let newNormalComponents = { ...state.components.normalComponents };
+                delete newNormalComponents[targetComponentID];
+                state.components.normalComponents = newNormalComponents;
+            }
+        },
+
         MODIFY_COMPONENT_DATA(state, { componentID, newComponentData }) {
             // 修改组件对象中所 存储的数据
             // componentID: String  需要被修改数据的组件 id

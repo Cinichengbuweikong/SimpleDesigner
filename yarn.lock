@@ -1014,6 +1014,25 @@
   resolved "https://registry.npmmirror.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
+"@emmetio/abbreviation@^2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@emmetio/abbreviation/-/abbreviation-2.3.3.tgz#ed2b88fe37b972292d6026c7c540aaf887cecb6e"
+  integrity sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==
+  dependencies:
+    "@emmetio/scanner" "^1.0.4"
+
+"@emmetio/css-abbreviation@^2.1.8":
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/@emmetio/css-abbreviation/-/css-abbreviation-2.1.8.tgz#b785313486eba6cb7eb623ad39378c4e1063dc00"
+  integrity sha512-s9yjhJ6saOO/uk1V74eifykk2CBYi01STTK3WlXWGOepyKa23ymJ053+DNQjpFcy1ingpaO7AxCcwLvHFY9tuw==
+  dependencies:
+    "@emmetio/scanner" "^1.0.4"
+
+"@emmetio/scanner@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@emmetio/scanner/-/scanner-1.0.4.tgz#e9cdc67194fd91f8b7eb141014be4f2d086c15f1"
+  integrity sha512-IqRuJtQff7YHHBk4G8YZ45uB9BaAGcwQeVzgj/zj8/UdOhtQpEIupUhSk8dys6spFIWVZVeK20CzGEnqR5SbqA==
+
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
   resolved "https://registry.npmmirror.com/@eslint/eslintrc/-/eslintrc-0.4.3.tgz#9e42981ef035beb3dd49add17acb96e8ff6f394c"
@@ -3006,6 +3025,14 @@ electron-to-chromium@^1.4.535:
   resolved "https://registry.npmmirror.com/electron-to-chromium/-/electron-to-chromium-1.4.563.tgz#dabb424202754c1fed2d2938ff564b23d3bbf0d3"
   integrity sha512-dg5gj5qOgfZNkPNeyKBZQAQitIQ/xwfIDmEQJHCbXaD9ebTZxwJXUsDYcBlAvZGZLi+/354l35J1wkmP6CqYaw==
 
+emmet@^2.4.6:
+  version "2.4.6"
+  resolved "https://registry.yarnpkg.com/emmet/-/emmet-2.4.6.tgz#f975094fb0fb5d2e78a7c94a65c308bdfd6436aa"
+  integrity sha512-dJfbdY/hfeTyf/Ef7Y7ubLYzkBvPQ912wPaeVYpAxvFxkEBf/+hJu4H6vhAvFN6HlxqedlfVn2x1S44FfQ97pg==
+  dependencies:
+    "@emmetio/abbreviation" "^2.3.3"
+    "@emmetio/css-abbreviation" "^2.1.8"
+
 emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.npmmirror.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
@@ -3498,6 +3525,15 @@ fresh@0.5.2:
   version "0.5.2"
   resolved "https://registry.npmmirror.com/fresh/-/fresh-0.5.2.tgz#3d8cadd90d976569fa835ab1f8e4b23a105605a7"
   integrity sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==
+
+fs-extra@^11.1.1:
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.1.1.tgz#da69f7c39f3b002378b0954bb6ae7efdc0876e2d"
+  integrity sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
 
 fs-extra@^9.1.0:
   version "9.1.0"

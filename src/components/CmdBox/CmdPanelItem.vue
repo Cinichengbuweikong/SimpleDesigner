@@ -20,7 +20,7 @@ export default {
             // 指令的介绍
             type: String,
             required: true
-        }
+        },
     }
 }
 </script>
@@ -35,6 +35,8 @@ div {
     span {
         line-height: 30px;
         margin: 0 15px;
+        font-family: monospace;
+        font-size: 16px;
     }
 
     &:first-child {
